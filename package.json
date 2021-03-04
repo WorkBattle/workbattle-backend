@@ -10,12 +10,19 @@
     "prettier:base": "prettier --parser typescript --single-quote",
     "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
     "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "nyc ./node_modules/.bin/_mocha 'tests/**/*.test.ts'"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node": "^15.10.0"
+    "@testdeck/mocha": "^0.1.2",
+    "chai": "^4.3.3",
+    "mocha": "^8.3.0",
+    "node": "^15.10.0",
+    "nyc": "^15.1.0",
+    "ts-mockito": "^2.6.1",
+    "ts-node": "^9.1.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
