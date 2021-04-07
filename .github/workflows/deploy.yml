@@ -11,6 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+            
+      - name: Install NPM packages
+        run: npm install
+        
+      - name: Run prettier check
+        run: npm run prettier:check
+
+      - name: Run Lint check
+        run: npm run tslint
+
+      - name: Run Unit testing
+        run: npm run test
+
+      - name: Run production build
+        run: npm run build
+        
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
