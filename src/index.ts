@@ -1,14 +1,10 @@
-import http from 'http';
+import server from './app';
 
-const hostname = '0.0.0.0';
-const port = 3000;
-
-const server = http.createServer((_req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+(async () => {
+  try {
+    await server.listen(3000, '0.0.0.0');
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
+  }
+})();
