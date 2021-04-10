@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
-    "start": "node ./dist/index.js",
+    "start": "env-cmd -f ./config/prod.env node ./dist/index.js",
     "tslint": "tslint --project tsconfig.json",
     "prettier:base": "prettier --parser typescript --single-quote",
     "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
@@ -17,11 +17,14 @@
   "license": "ISC",
   "dependencies": {
     "@testdeck/mocha": "^0.1.2",
+    "@types/pg": "^7.14.11",
     "chai": "^4.3.3",
+    "env-cmd": "^10.1.0",
     "fastify": "^3.14.2",
     "mocha": "^8.3.0",
     "node": "^15.10.0",
     "nyc": "^15.1.0",
+    "pg": "^8.5.1",
     "ts-mockito": "^2.6.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3"

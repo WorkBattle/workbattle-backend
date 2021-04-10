@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
-import { IncomingMessage, Server, ServerResponse } from 'node:http';
+import { IncomingMessage, request, Server, ServerResponse } from 'node:http';
 
 const server: FastifyInstance<
   Server,
