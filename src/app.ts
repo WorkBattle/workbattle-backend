@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { IncomingMessage, request, Server, ServerResponse } from 'node:http';
+import userService from './userManagment/utils/userService';
 
 const server: FastifyInstance<
   Server,
