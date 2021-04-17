@@ -1,4 +1,4 @@
-export function constractCreateQueryStringBasedOnParams(
+export function constructCreateQueryStringBasedOnParams(
   tableName: string,
   columnObject: { [columnKey: string]: any }
 ): { queryString: string; valuesArray: any } {
@@ -6,7 +6,7 @@ export function constractCreateQueryStringBasedOnParams(
   let columnValues: Array<any> = [];
   Object.keys(columnObject).forEach((columnKey: string) => {
     let tempColumnValue: any = columnObject[columnKey];
-    if (tempColumnValue != null) {
+    if (tempColumnValue != undefined) {
       columnNames.push(columnKey);
       columnValues.push(tempColumnValue);
     }
@@ -19,7 +19,7 @@ export function constractCreateQueryStringBasedOnParams(
   return { queryString: createRecordQueryString, valuesArray: columnValues };
 }
 
-export function constractUpdateQueryStringBasedOnParams(
+export function constructUpdateQueryStringBasedOnParams(
   tableName: string,
   uuid: string,
   columnObject: { [columnKey: string]: any }
@@ -29,7 +29,7 @@ export function constractUpdateQueryStringBasedOnParams(
   let counter = 1;
   Object.keys(columnObject).forEach((columnKey: string) => {
     let tempColumnValue: any = columnObject[columnKey];
-    if (tempColumnValue != null) {
+    if (tempColumnValue != undefined) {
       updateRecordQueryString += `${columnKey} = $${counter}, `;
       columnValues.push(tempColumnValue);
       counter += 1;

@@ -1,34 +1,26 @@
 import { QueryResult } from 'pg';
+import { v4 as uuid4 } from 'uuid';
+import postgresQueryExecutor from '../../db/postgresQueryExecutor';
 import {
   constructCreateQueryStringBasedOnParams,
   constructUpdateQueryStringBasedOnParams,
 } from '../../utils/CRUDUtils';
 import IService from '../../utils/IService';
-import { v4 as uuid4 } from 'uuid';
-import postgresQueryExecutor from '../../db/postgresQueryExecutor';
 
-class SubmissionService implements IService {
+class transactionService implements IService {
   public async createRecord(
-    contest_type: string,
-    user_uuid: string,
-    contest_uuid: string,
-    likes_uuid: string,
-    contest_url?: string,
-    file_url?: string,
-    repo_url?: string
+    date: Date,
+    info: string,
+    user_uuid: string
   ): Promise<QueryResult<any> | { error: any }> {
     const {
       queryString,
       valuesArray,
-    } = constructCreateQueryStringBasedOnParams('submission', {
+    } = constructCreateQueryStringBasedOnParams('transactions', {
       uuid: uuid4(),
-      contest_type: contest_type,
+      date: date,
+      info: info,
       user_uuid: user_uuid,
-      contest_uuid,
-      likes_uuid: likes_uuid,
-      contest_url: contest_url,
-      file_url: file_url,
-      repo_url: repo_url,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -38,25 +30,17 @@ class SubmissionService implements IService {
   }
   public async updateRecord(
     uuid: string,
-    contest_type?: string,
-    user_uuid?: string,
-    contest_uuid?: string,
-    likes_uuid?: string,
-    contest_url?: string,
-    file_url?: string,
-    repo_url?: string
+    date?: Date,
+    info?: string,
+    user_uuid?: string
   ): Promise<QueryResult<any> | { error: any }> {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams(uuid, 'submission', {
-      contest_type: contest_type,
+    } = constructUpdateQueryStringBasedOnParams('transactions', uuid, {
+      date: date,
+      info: info,
       user_uuid: user_uuid,
-      contest_uuid,
-      likes_uuid: likes_uuid,
-      contest_url: contest_url,
-      file_url: file_url,
-      repo_url: repo_url,
     });
     const updateRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -67,7 +51,7 @@ class SubmissionService implements IService {
   public async deleteRecord(
     uuid: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const deleteRecordQuery = `DELETE FROM submission WHERE uuid = $1;`;
+    const deleteRecordQuery = `DELETE FROM transactions WHERE uuid = $1;`;
     const deleteRecordResponse = await postgresQueryExecutor(
       deleteRecordQuery,
       [uuid]
@@ -75,12 +59,17 @@ class SubmissionService implements IService {
     return deleteRecordResponse;
   }
   public async getRecord(
-    uuid: string
+    uuid: string,
+    user_uuid?: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const getRecordQuery: string = `SELECT * FROM submission WHERE uuid = $1`;
+    const getRecordQuery = `SELECT * FROM transactions WHERE ${
+      user_uuid != null ? 'user_uuid' : 'uuid'
+    } = $1;`;
     const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
-      uuid,
+      user_uuid ?? uuid,
     ]);
     return getRecordResponse;
   }
 }
+
+export default new transactionService();
