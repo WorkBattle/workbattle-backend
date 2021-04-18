@@ -1,36 +1,24 @@
-import IService from '../../utils/IService';
+import { QueryResult } from 'pg';
 import {
   constructCreateQueryStringBasedOnParams,
   constructUpdateQueryStringBasedOnParams,
 } from '../../utils/CRUDUtils';
+import IService from '../../utils/IService';
 import { v4 as uuid4 } from 'uuid';
 import postgresQueryExecutor from '../../db/postgresQueryExecutor';
-import { QueryResult } from 'pg';
 
-class UserService implements IService {
+class likesService implements IService {
   public async createRecord(
-    username: string,
-    email: string,
-    password?: string,
-    firstname?: string,
-    lastname?: string,
-    role: string = 'user',
-    balance: number = 0,
-    avatar = ''
+    likes: number,
+    dislikes: number
   ): Promise<QueryResult<any> | { error: any }> {
     const {
       queryString,
       valuesArray,
-    } = constructCreateQueryStringBasedOnParams('"user"', {
+    } = constructCreateQueryStringBasedOnParams('likes_dislikes', {
       uuid: uuid4(),
-      username: username,
-      email: email,
-      password: password,
-      firstname: firstname,
-      lastname: lastname,
-      role: role,
-      balance: balance,
-      avatar: avatar,
+      likes: likes,
+      dislikes: dislikes,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -40,27 +28,15 @@ class UserService implements IService {
   }
   public async updateRecord(
     uuid: string,
-    username?: string,
-    email?: string,
-    password?: string,
-    firstname?: string,
-    lastname?: string,
-    role: string = 'user',
-    balance: number = 0,
-    avatar?: string
+    likes?: number,
+    dislikes?: number
   ): Promise<QueryResult<any> | { error: any }> {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams('"user"', uuid, {
-      username: username,
-      email: email,
-      password: password,
-      firstname: firstname,
-      lastname: lastname,
-      role: role,
-      balance: balance,
-      avatar: avatar,
+    } = constructUpdateQueryStringBasedOnParams(uuid, 'likes_dislikes', {
+      likes: likes,
+      dislikes: dislikes,
     });
     const updateRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -71,7 +47,7 @@ class UserService implements IService {
   public async deleteRecord(
     uuid: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const deleteRecordQuery: string = `DELETE FROM "user" WHERE uuid = $1;`;
+    const deleteRecordQuery = `DELETE FROM likes_dislikes WHERE uuid = $1;`;
     const deleteRecordResponse = await postgresQueryExecutor(
       deleteRecordQuery,
       [uuid]
@@ -81,7 +57,7 @@ class UserService implements IService {
   public async getRecord(
     uuid: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const getRecordQuery: string = `SELECT * FROM "user" WHERE uuid = $1`;
+    const getRecordQuery: string = `SELECT * FROM likes_dislikes WHERE uuid = $1`;
     const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
       uuid,
     ]);
@@ -89,4 +65,4 @@ class UserService implements IService {
   }
 }
 
-export default new UserService();
+export default new likesService();
