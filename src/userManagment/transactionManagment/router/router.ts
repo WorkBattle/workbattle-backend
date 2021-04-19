@@ -8,7 +8,12 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: 'GET',
-    url: '/user:uuid',
+    url: '/transaction/:user_uuid',
     handler: controller.getAllTransaction,
+  },
+  {
+    method: 'POST',
+    url: '/transaction',
+    handler: controller.createTransaction,
   },
 ];

@@ -8,7 +8,7 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: 'GET',
-    url: '/attachments',
+    url: '/attachments/:user_uuid',
     handler: controller.getAllAttachments,
   },
   {

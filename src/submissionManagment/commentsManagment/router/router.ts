@@ -8,7 +8,7 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: 'GET',
-    url: '/comments',
+    url: '/comments/:submission_uuid/:user_uuid',
     handler: controller.getAllComments,
   },
   {

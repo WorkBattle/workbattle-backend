@@ -5,9 +5,28 @@ export const getAllTransaction = async (
   req: FastifyRequest,
   rep: FastifyReply
 ) => {
-  const getUserResponse: any = await transactionService.getAllRecords();
-  if (getUserResponse.error) {
-    return rep.status(400).send(getUserResponse);
+  const params: any = req.params;
+  const getTransactionResponse: any = await transactionService.getAllRecords(
+    params.user_uuid
+  );
+  if (getTransactionResponse.error) {
+    return rep.status(400).send(getTransactionResponse);
   }
-  return { user: getUserResponse.rows[0] };
+  return { user: getTransactionResponse.rows[0] };
+};
+
+export const createTransaction = async (
+  req: FastifyRequest,
+  rep: FastifyReply
+) => {
+  const body: any = req.body;
+  const createTransactionResponse: any = await transactionService.createRecord(
+    new Date(),
+    body.info,
+    body.user_uuid
+  );
+  if (createTransactionResponse.error) {
+    return rep.status(400).send(createTransactionResponse);
+  }
+  return rep.status(201).send({ result: 'transaction created' });
 };
