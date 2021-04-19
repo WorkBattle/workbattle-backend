@@ -8,23 +8,21 @@ import { v4 as uuid4 } from 'uuid';
 import postgresQueryExecutor from '../../db/postgresQueryExecutor';
 
 class likesService implements IService {
-  public async createRecord(
-    likes: number,
-    dislikes: number
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async createRecord(likes: number, dislikes: number) {
+    const uuid = uuid4();
     const {
       queryString,
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('likes_dislikes', {
-      uuid: uuid4(),
+      uuid: uuid,
       likes: likes,
       dislikes: dislikes,
     });
-    const createRecordResponse = await postgresQueryExecutor(
+    const createRecordResponse: any = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return createRecordResponse;
+    return { createLikesResponse: createRecordResponse, uuid: uuid };
   }
   public async updateRecord(
     uuid: string,

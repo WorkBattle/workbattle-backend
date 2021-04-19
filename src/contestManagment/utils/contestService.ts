@@ -87,6 +87,11 @@ class ContestService implements IService {
     ]);
     return getRecordResponse;
   }
+  public async getAllRecords() {
+    const getRecordQuery: string = `SELECT * FROM contest;`;
+    const getRecordResponse = await postgresQueryExecutor(getRecordQuery);
+    return getRecordResponse;
+  }
 }
 
 export default new ContestService();

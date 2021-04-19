@@ -63,6 +63,13 @@ class attachmentService implements IService {
     ]);
     return getRecordResponse;
   }
+  public async getAllRecords(user_uuid: string) {
+    const getRecordQuery: string = `SELECT * FROM attachment where user_uuid = $1`;
+    const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
+      user_uuid,
+    ]);
+    return getRecordResponse;
+  }
 }
 
 export default new attachmentService();

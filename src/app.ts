@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
-import { IncomingMessage, request, Server, ServerResponse } from 'node:http';
+import { IncomingMessage, Server, ServerResponse } from 'http';
+import registerApi from './server/index';
 
 const server: FastifyInstance<
   Server,
@@ -7,8 +8,11 @@ const server: FastifyInstance<
   ServerResponse
 > = fastify({ logger: true });
 
-server.get('/', async (request, reply) => {
-  reply.status(200).send('Hello World!');
-});
+registerApi(server);
 
-export default server;
+export default {
+  server,
+  async init() {
+    await server.listen(process.env.PORT!, process.env.HOST);
+  },
+};

@@ -83,4 +83,14 @@ class SubmissionService implements IService {
     ]);
     return getRecordResponse;
   }
+  public async getAllRecords(contest_uuid: string, user_uuid: string) {
+    const getRecordQuery: string = `SELECT * FROM submission where contest_uuid = $1 and user_uuid = $2`;
+    const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
+      contest_uuid,
+      user_uuid,
+    ]);
+    return getRecordResponse;
+  }
 }
+
+export default new SubmissionService();

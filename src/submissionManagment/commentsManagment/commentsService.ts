@@ -67,6 +67,14 @@ class commentsService implements IService {
     ]);
     return getRecordResponse;
   }
+  public async getAllRecords(submission_uuid: string, user_uuid: string) {
+    const getRecordQuery: string = `SELECT * FROM comments where submission_uuid = $1 and user_uuid = $2`;
+    const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
+      submission_uuid,
+      user_uuid,
+    ]);
+    return getRecordResponse;
+  }
 }
 
 export default new commentsService();

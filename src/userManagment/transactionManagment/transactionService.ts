@@ -70,6 +70,11 @@ class transactionService implements IService {
     ]);
     return getRecordResponse;
   }
+  public async getAllRecords() {
+    const getRecordQuery: string = `SELECT * FROM transactions`;
+    const getRecordResponse = await postgresQueryExecutor(getRecordQuery);
+    return getRecordResponse;
+  }
 }
 
 export default new transactionService();
