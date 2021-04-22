@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { uploadFile } from '../../aws/fileUtils';
 import userService from '../utils/userService';
 
 export const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
@@ -14,7 +15,10 @@ export const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
 export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
   const body: any = req.body;
 
-  const createUserResponse: any = await userService.createRecord(
+  const avatarBase64 = body.avatar64;
+  const avatarUrl = body.avatarUrl;
+
+  const { uuid, createRecordResponse }: any = await userService.createRecord(
     body.username,
     body.email,
     body.password,
@@ -22,10 +26,13 @@ export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
     body.lastname,
     body.role,
     body.balance,
-    body.avatar
+    avatarUrl
   );
-  if (createUserResponse.error) {
-    return rep.status(400).send(createUserResponse);
+  if (createRecordResponse.error) {
+    return rep.status(400).send(createRecordResponse);
+  }
+  if (avatarBase64 != undefined) {
+    uploadFile(avatarBase64, `${uuid}/${avatarUrl}`);
   }
   return rep.status(201).send({ result: 'User has been created.' });
 };

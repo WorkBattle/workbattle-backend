@@ -17,12 +17,13 @@ class UserService implements IService {
     role: string = 'user',
     balance: number = 0,
     avatar = ''
-  ): Promise<QueryResult<any> | { error: any }> {
+  ) {
+    const uuid = uuid4();
     const {
       queryString,
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('"user"', {
-      uuid: uuid4(),
+      uuid: uuid,
       username: username,
       email: email,
       password: password,
@@ -36,7 +37,7 @@ class UserService implements IService {
       queryString,
       valuesArray
     );
-    return createRecordResponse;
+    return { uuid: uuid, createRecordResponse: createRecordResponse };
   }
   public async updateRecord(
     uuid: string,
