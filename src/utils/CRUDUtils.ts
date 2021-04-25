@@ -13,8 +13,8 @@ export function constructCreateQueryStringBasedOnParams(
   });
   const createRecordQueryString = `INSERT INTO ${tableName} (${columnNames.join(
     ', '
-  )}) VALUES (${columnValues.map(
-    (elem: any) => `$${columnValues.indexOf(elem) + 1}`
+  )}) VALUES (${columnNames.map(
+    (elem: any) => `$${columnNames.indexOf(elem) + 1}`
   )})`;
   return { queryString: createRecordQueryString, valuesArray: columnValues };
 }
@@ -39,7 +39,7 @@ export function constructUpdateQueryStringBasedOnParams(
     0,
     updateRecordQueryString.length - 2
   );
-  updateRecordQueryString += `WHERE uuid = $${counter}`;
+  updateRecordQueryString += ` WHERE uuid = $${counter}`;
   columnValues.push(uuid);
   return { queryString: updateRecordQueryString, valuesArray: columnValues };
 }
