@@ -17,31 +17,30 @@ export const uploadFile = (base64FileContent: Buffer, fileName: string) => {
   });
 };
 
-export const getFileFromS3 = (pathTofile: string) => {
+export const checkIfExists = (pathToFile: string) => {
   const params = {
     Bucket: 'file-storage-workbattle',
-    // Key: pathTofile,
+    Key: pathToFile,
   };
-  s3.listObjects(params, (err, data) => {
-    if (err) {
-      console.log(err);
+  try {
+    s3.headObject(params);
+  } catch (err) {
+    if (err && err.code === 'NotFound') {
       return { error: err };
-    } else {
-      return data;
     }
-  });
+  }
+  return {};
 };
 
-// const fs = require('fs');
-// const util = require('util');
+export const deleteFile = async (pathToFile: string) => {
+  const params = {
+    Bucket: 'file-storage-workbattle',
+    Key: pathToFile,
+  };
+  return s3.deleteObject(params).promise();
+};
 
-// const readFile = util.promisify(fs.readFile);
-
-// async function getStuff(filePath: string) {
-//   return readFile(filePath);
-// }
-
-// (async () => {
-//   uploadFile(await getStuff('/Users/kostiantynmatvieienkov/Desktop/sticker.jpg'), 'useruuid/sticker.jpg');
-//   // console.log(getFileFromS3('sticker.jpg'))
-// })();
+(async () => {
+  // await deleteFile('b55ddbe4-a692-4865-8076-8abe74ebc06f/sticker.jpg')
+  // console.log(await s3.listObjects({Bucket: "file-storage-workbattle"}).promise());
+})();

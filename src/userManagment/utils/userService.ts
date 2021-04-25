@@ -31,7 +31,7 @@ class UserService implements IService {
       lastname: lastname,
       role: role,
       balance: balance,
-      avatar: avatar,
+      avatar: avatar != '' ? `${uuid}/${avatar}` : avatar,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -49,7 +49,7 @@ class UserService implements IService {
     role: string = 'user',
     balance: number = 0,
     avatar?: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  ) {
     const {
       queryString,
       valuesArray,
@@ -63,21 +63,35 @@ class UserService implements IService {
       balance: balance,
       avatar: avatar,
     });
+    let getAvatarUrlResponse: any = '';
+    if (avatar != undefined) {
+      const getAvatarUrl: string = 'SELECT avatar from "user" WHERE uuid = $1;';
+      getAvatarUrlResponse = await postgresQueryExecutor(getAvatarUrl, [uuid]);
+    }
     const updateRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return updateRecordResponse;
+    return {
+      updateRecordResponse: updateRecordResponse,
+      avatarUrlResponse: getAvatarUrlResponse,
+    };
   }
-  public async deleteRecord(
-    uuid: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async deleteRecord(uuid: string) {
+    const getAvatarUrl: string = 'SELECT avatar from "user" WHERE uuid = $1;';
+    const getAvatarUrlResponse: any = await postgresQueryExecutor(
+      getAvatarUrl,
+      [uuid]
+    );
     const deleteRecordQuery: string = `DELETE FROM "user" WHERE uuid = $1;`;
     const deleteRecordResponse = await postgresQueryExecutor(
       deleteRecordQuery,
       [uuid]
     );
-    return deleteRecordResponse;
+    return {
+      deleteUserResponse: deleteRecordResponse,
+      avatarUrl: getAvatarUrlResponse,
+    };
   }
   public async getRecord(
     uuid: string
