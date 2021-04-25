@@ -16,4 +16,14 @@ export const routes: RouteOptions[] = [
     url: '/user',
     handler: controller.createUser,
   },
+  {
+    method: 'PATCH',
+    url: '/user',
+    handler: controller.updateUser,
+  },
+  {
+    method: 'DELETE',
+    url: '/user/:uuid',
+    handler: controller.deleteUser,
+  },
 ];
