@@ -16,4 +16,14 @@ export const routes: RouteOptions[] = [
     url: '/contest',
     handler: controller.createContest,
   },
+  {
+    method: 'PATCH',
+    url: '/contest',
+    handler: controller.updateContest,
+  },
+  {
+    method: 'DELETE',
+    url: '/contest/:uuid',
+    handler: controller.deleteContest,
+  },
 ];
