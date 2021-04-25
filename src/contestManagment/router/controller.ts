@@ -9,7 +9,7 @@ export const getAllContests = async (
   if (getAllContestsResponse.error) {
     return rep.status(400).send(getAllContestsResponse);
   }
-  return { contestList: getAllContestsResponse.rows[0] };
+  return { contestList: getAllContestsResponse.rows };
 };
 
 export const createContest = async (req: FastifyRequest, rep: FastifyReply) => {
