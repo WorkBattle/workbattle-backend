@@ -28,3 +28,28 @@ export const createComment = async (req: FastifyRequest, rep: FastifyReply) => {
   }
   return rep.status(201).send({ result: 'Comment has been created.' });
 };
+
+export const updateComment = async (req: FastifyRequest, rep: FastifyReply) => {
+  const body: any = req.body;
+  const updateCommentsResponse: any = await commentsService.updateRecord(
+    body.uuid,
+    body.text,
+    body.submission_uuid,
+    body.user_uuid
+  );
+  if (updateCommentsResponse.error) {
+    return rep.status(400).send(updateCommentsResponse);
+  }
+  return rep.status(200).send({ result: 'Comment updated.' });
+};
+
+export const deleteComment = async (req: FastifyRequest, rep: FastifyReply) => {
+  const body: any = req.body;
+  const deleteCommentResponse: any = await commentsService.deleteRecord(
+    body.uuid
+  );
+  if (deleteCommentResponse.error) {
+    return rep.status(400).send(deleteCommentResponse);
+  }
+  return rep.status(200).send({ result: 'Comment deleted.' });
+};

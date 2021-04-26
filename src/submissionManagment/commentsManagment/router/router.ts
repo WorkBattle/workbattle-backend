@@ -16,4 +16,14 @@ export const routes: RouteOptions[] = [
     url: '/comment',
     handler: controller.createComment,
   },
+  {
+    method: 'PATCH',
+    url: '/comment',
+    handler: controller.updateComment,
+  },
+  {
+    method: 'DELETE',
+    url: '/comment',
+    handler: controller.deleteComment,
+  },
 ];
