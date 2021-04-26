@@ -64,15 +64,20 @@ class SubmissionService implements IService {
     );
     return updateRecordResponse;
   }
-  public async deleteRecord(
-    uuid: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async deleteRecord(uuid: string) {
+    const getLikesUUID = `SELECT likes_uuid FROM submission WHERE uuid = $1;`;
+    const getLikesUUIDResponse = await postgresQueryExecutor(getLikesUUID, [
+      uuid,
+    ]);
     const deleteRecordQuery = `DELETE FROM submission WHERE uuid = $1;`;
     const deleteRecordResponse = await postgresQueryExecutor(
       deleteRecordQuery,
       [uuid]
     );
-    return deleteRecordResponse;
+    return {
+      deleteSubmissionResponse: deleteRecordResponse,
+      getLikesUUIDResponse: getLikesUUIDResponse,
+    };
   }
   public async getRecord(
     uuid: string
