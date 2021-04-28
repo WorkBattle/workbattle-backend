@@ -13,16 +13,16 @@ class attachmentService implements IService {
     const {
       queryString,
       valuesArray,
-    } = constructCreateQueryStringBasedOnParams('attachments', {
+    } = constructCreateQueryStringBasedOnParams('attachment', {
       uuid: uuid,
-      url: url,
+      url: url != '' ? `${uuid}/${url}` : url,
       comment_uuid: comment_uuid,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return { createRecordResponse, uuid };
+    return { createAttachmentResponse: createRecordResponse, uuid: uuid };
   }
   public async updateRecord(uuid: string, url?: string, comment_uuid?: string) {
     const {
@@ -43,7 +43,10 @@ class attachmentService implements IService {
       queryString,
       valuesArray
     );
-    return { updateRecordResponse, getAttachmentUrlResponse };
+    return {
+      updateAttachmentResponse: updateRecordResponse,
+      getAttachmentUrlResponse: getAttachmentUrlResponse,
+    };
   }
   public async deleteRecord(uuid: string) {
     const deleteRecordQuery = `DELETE FROM attachment WHERE uuid = $1;`;
@@ -53,7 +56,10 @@ class attachmentService implements IService {
       [uuid]
     );
     const getUrlResponse = await postgresQueryExecutor(getUrlQuery, [uuid]);
-    return { deleteRecordResponse, getUrlResponse };
+    return {
+      deleteAttachmentResponse: deleteRecordResponse,
+      urlResponse: getUrlResponse,
+    };
   }
   public async getRecord(
     uuid: string

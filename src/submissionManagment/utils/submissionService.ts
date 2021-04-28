@@ -9,11 +9,11 @@ import postgresQueryExecutor from '../../db/postgresQueryExecutor';
 
 class SubmissionService implements IService {
   public async createRecord(
-    contest_type: string,
+    content_type: string,
     user_uuid: string,
     contest_uuid: string,
     likes_uuid: string,
-    contest_url?: string,
+    content_url?: string,
     file_url?: string,
     repo_url?: string
   ): Promise<QueryResult<any> | { error: any }> {
@@ -22,11 +22,11 @@ class SubmissionService implements IService {
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('submission', {
       uuid: uuid4(),
-      contest_type: contest_type,
+      content_type: content_type,
       user_uuid: user_uuid,
       contest_uuid,
       likes_uuid: likes_uuid,
-      contest_url: contest_url,
+      content_url: content_url,
       file_url: file_url,
       repo_url: repo_url,
     });
