@@ -28,7 +28,7 @@ class attachmentService implements IService {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams(uuid, 'attachment', {
+    } = constructUpdateQueryStringBasedOnParams('attachment', uuid, {
       url: url,
       comment_uuid: comment_uuid,
     });

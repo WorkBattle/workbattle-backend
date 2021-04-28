@@ -13,6 +13,13 @@ export const getAllAttachments = async (
   if (getCommentResponse.error) {
     return rep.status(400).send(getCommentResponse);
   }
+  let comments = getCommentResponse.rows;
+  if (comments != []) {
+    comments = comments.map((comment: any) => {
+      comment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${comment.url}`;
+      return comment;
+    });
+  }
   return rep.status(200).send({ attachmentList: getCommentResponse.rows });
 };
 
@@ -32,7 +39,7 @@ export const createAttachment = async (
   }
 
   if (attachment64 != undefined && body.url != '') {
-    uploadFile(attachment64, `${uuid}/${body.url}`);
+    uploadFile(Buffer.from(attachment64, 'base64'), `${uuid}/${body.url}`);
   }
 
   return rep.status(201).send({ result: 'Attachment has been created.' });
@@ -44,7 +51,6 @@ export const updateAttachment = async (
 ) => {
   const body: any = req.body;
   const attachment64 = body.attachment64;
-
   const {
     updateAttachmentResponse,
     getAttachmentUrlResponse,
@@ -59,7 +65,6 @@ export const updateAttachment = async (
   if (getAttachmentUrlResponse.error) {
     return rep.status(400).send(getAttachmentUrlResponse);
   }
-
   if (body.url == '') {
     try {
       await deleteFile(body.url);
@@ -68,13 +73,14 @@ export const updateAttachment = async (
     }
   } else {
     if (attachment64 != undefined) {
-      const exists = checkIfExists(getAttachmentUrlResponse.rows[0].avatar);
+      const exists = checkIfExists(getAttachmentUrlResponse.rows[0].url);
       if (!exists.error) {
-        await deleteFile(getAttachmentUrlResponse.rows[0].avatar);
+        await deleteFile(getAttachmentUrlResponse.rows[0].url);
       }
-      uploadFile(attachment64, body.url);
+      uploadFile(Buffer.from(attachment64, 'base64'), body.url);
     }
   }
+  return rep.status(200).send({ result: 'Attachment updated.' });
 };
 
 export const deleteAttachment = async (

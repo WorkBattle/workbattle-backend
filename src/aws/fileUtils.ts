@@ -1,11 +1,11 @@
 import { s3 } from './awsConnector';
 
-export const uploadFile = (base64FileContent: Buffer, fileName: string) => {
+export const uploadFile = (arrayBufferContent: Buffer, fileName: string) => {
   // Setting up S3 upload parameters
   const params = {
     Bucket: 'file-storage-workbattle',
     Key: fileName,
-    Body: base64FileContent,
+    Body: arrayBufferContent,
   };
 
   // Uploading files to the bucket
