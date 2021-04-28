@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import submissionService from '../../submissionManagment/utils/submissionService';
+import userService from '../../userManagment/utils/userService';
 import contestService from '../utils/contestService';
 
 export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
@@ -16,9 +17,21 @@ export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
     return rep.status(400).send(getAllSubmissionsResponse);
   }
   let contestDetailsObject = getContestResponse.rows[0];
+  let allSubmissions = getAllSubmissionsResponse.rows;
+  allSubmissions = allSubmissions.map(async (submissionObject: any) => {
+    const user_uuid = submissionObject.author_uuid;
+    const getUserResponse: any = await userService.getRecord(user_uuid);
+    if (getUserResponse.error) {
+      return rep.status(400).send(getUserResponse);
+    }
+    let userData = getUserResponse.rows[0];
+    userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+    submissionObject.user = userData;
+    return submissionObject;
+  });
   return rep.status(200).send({
     contest: contestDetailsObject,
-    submissionList: getAllSubmissionsResponse.rows,
+    submissionList: allSubmissions,
   });
 };
 

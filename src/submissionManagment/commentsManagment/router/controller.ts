@@ -7,8 +7,7 @@ export const getAllComments = async (
 ) => {
   const params: any = req.params;
   const getAllCommentsResponse: any = await commentsService.getAllRecords(
-    params.submission_uuid,
-    params.user_uuid
+    params.submission_uuid
   );
   if (getAllCommentsResponse.error) {
     return rep.status(400).send(getAllCommentsResponse);

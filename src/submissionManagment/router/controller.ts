@@ -1,19 +1,44 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import attachmentService from '../attachmentManagment/attachmentService';
+import commentsService from '../commentsManagment/commentsService';
 import likesService from '../likesManagment/likesService';
 import submissionService from '../utils/submissionService';
 
-export const getAllSubmissions = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
   const params: any = req.params;
-  const getAllSubmissionsResponse: any = await submissionService.getAllRecords(
-    params.contest_uuid
+  const getSubmissionResponse: any = await submissionService.getRecord(
+    params.uuid
   );
-  if (getAllSubmissionsResponse.error) {
-    return rep.status(400).send(getAllSubmissionsResponse);
+  if (getSubmissionResponse.error) {
+    return rep.status(400).send(getSubmissionResponse);
   }
-  return { contestList: getAllSubmissionsResponse.rows };
+  const getAllCommentsResponse: any = await commentsService.getAllRecords(
+    params.uuid
+  );
+  if (getAllCommentsResponse.error) {
+    return rep.status(400).send(getAllCommentsResponse);
+  }
+  let commentsList = getAllCommentsResponse.rows;
+  commentsList = commentsList.map((comment: any) => {
+    const commentUuid = comment.uuid;
+    const getAttachmentResponse: any = attachmentService.getRecord(commentUuid);
+    if (getAttachmentResponse.error) {
+      return rep.status(400).send(getAttachmentResponse);
+    }
+    let attachments = getAttachmentResponse.rows;
+    if (attachments != []) {
+      attachments = attachments.map((attachment: any) => {
+        attachment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${attachment.url}`;
+        return attachment;
+      });
+    }
+    comment.attachments = attachments;
+    return comment;
+  });
+  return rep.status(200).send({
+    submission: getSubmissionResponse.rows[0],
+    commentsList: commentsList,
+  });
 };
 
 export const createSubmission = async (

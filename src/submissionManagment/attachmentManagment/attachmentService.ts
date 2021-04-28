@@ -64,7 +64,7 @@ class attachmentService implements IService {
   public async getRecord(
     uuid: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const getRecordQuery: string = `SELECT * FROM attachment WHERE uuid = $1`;
+    const getRecordQuery: string = `SELECT * FROM attachment WHERE comment_uuid = $1`;
     const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
       uuid,
     ]);
