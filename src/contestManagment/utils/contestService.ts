@@ -32,6 +32,7 @@ class ContestService implements IService {
       contest_stop: contestStop,
       contest_type: contestType,
     });
+    console.log(queryString);
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
@@ -52,7 +53,7 @@ class ContestService implements IService {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams(uuid, 'contest', {
+    } = constructUpdateQueryStringBasedOnParams('contest', uuid, {
       title: title,
       description: description,
       task_description: task_description,
