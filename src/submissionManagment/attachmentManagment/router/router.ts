@@ -8,12 +8,22 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: 'GET',
-    url: '/attachments/:user_uuid',
+    url: '/attachments/:uuid',
     handler: controller.getAllAttachments,
   },
   {
     method: 'POST',
     url: '/attachment',
     handler: controller.createAttachment,
+  },
+  {
+    method: 'PATCH',
+    url: '/attachment',
+    handler: controller.updateAttachment,
+  },
+  {
+    method: 'DELETE',
+    url: '/attachment/:uuid',
+    handler: controller.deleteAttachment,
   },
 ];

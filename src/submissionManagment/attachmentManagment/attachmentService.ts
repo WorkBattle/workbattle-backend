@@ -8,51 +8,52 @@ import IService from '../../utils/IService';
 import postgresQueryExecutor from '../../db/postgresQueryExecutor';
 
 class attachmentService implements IService {
-  public async createRecord(
-    url: string,
-    user_uuid: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async createRecord(url: string, comment_uuid: string) {
+    const uuid = uuid4();
     const {
       queryString,
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('attachments', {
-      uuid: uuid4(),
+      uuid: uuid,
       url: url,
-      user_uuid: user_uuid,
+      comment_uuid: comment_uuid,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return createRecordResponse;
+    return { createRecordResponse, uuid };
   }
-  public async updateRecord(
-    uuid: string,
-    url?: string,
-    user_uuid?: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async updateRecord(uuid: string, url?: string, comment_uuid?: string) {
     const {
       queryString,
       valuesArray,
     } = constructUpdateQueryStringBasedOnParams(uuid, 'attachment', {
       url: url,
-      user_uuid: user_uuid,
+      comment_uuid: comment_uuid,
     });
+    let getAttachmentUrlResponse: any = '';
+    if (url != undefined) {
+      const getAttachmentUrl = 'SELECT url FROM attachment WHERE uuid = $1;';
+      getAttachmentUrlResponse = await postgresQueryExecutor(getAttachmentUrl, [
+        uuid,
+      ]);
+    }
     const updateRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return updateRecordResponse;
+    return { updateRecordResponse, getAttachmentUrlResponse };
   }
-  public async deleteRecord(
-    uuid: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  public async deleteRecord(uuid: string) {
     const deleteRecordQuery = `DELETE FROM attachment WHERE uuid = $1;`;
+    const getUrlQuery = 'SELECT url FROM attachment WHERE uuid = $1;';
     const deleteRecordResponse = await postgresQueryExecutor(
       deleteRecordQuery,
       [uuid]
     );
-    return deleteRecordResponse;
+    const getUrlResponse = await postgresQueryExecutor(getUrlQuery, [uuid]);
+    return { deleteRecordResponse, getUrlResponse };
   }
   public async getRecord(
     uuid: string
@@ -63,10 +64,10 @@ class attachmentService implements IService {
     ]);
     return getRecordResponse;
   }
-  public async getAllRecords(user_uuid: string) {
-    const getRecordQuery: string = `SELECT * FROM attachment where user_uuid = $1`;
+  public async getAllRecords(uuid: string) {
+    const getRecordQuery: string = `SELECT * FROM attachment WHERE comment_uuid = $1`;
     const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
-      user_uuid,
+      uuid,
     ]);
     return getRecordResponse;
   }
