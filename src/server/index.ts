@@ -9,6 +9,9 @@ import * as attachment from '../submissionManagment/attachmentManagment/router';
 const routers: any[] = [contest, user, submission, comment, attachment];
 
 export default (server: FastifyInstance<Server>) => {
+  server.register(require('fastify-cors'), {
+    origin: true,
+  });
   routers.forEach((router) => {
     const { routes, opts } = router;
 
