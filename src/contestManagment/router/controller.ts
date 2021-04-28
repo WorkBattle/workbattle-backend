@@ -1,5 +1,26 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import submissionService from '../../submissionManagment/utils/submissionService';
 import contestService from '../utils/contestService';
+
+export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
+  const params: any = req.params;
+  const getContestResponse: any = await contestService.getRecord(params.uuid);
+
+  if (getContestResponse.error) {
+    return rep.status(400).send(getContestResponse);
+  }
+  const getAllSubmissionsResponse: any = await submissionService.getAllRecords(
+    params.uuid
+  );
+  if (getAllSubmissionsResponse.error) {
+    return rep.status(400).send(getAllSubmissionsResponse);
+  }
+  let contestDetailsObject = getContestResponse.rows[0];
+  return rep.status(200).send({
+    contest: contestDetailsObject,
+    submissionList: getAllSubmissionsResponse.rows,
+  });
+};
 
 export const getAllContests = async (
   req: FastifyRequest,

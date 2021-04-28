@@ -12,6 +12,11 @@ export const routes: RouteOptions[] = [
     handler: controller.getAllContests,
   },
   {
+    method: 'GET',
+    url: '/contest/:uuid',
+    handler: controller.getContest,
+  },
+  {
     method: 'POST',
     url: '/contest',
     handler: controller.createContest,
