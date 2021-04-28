@@ -27,11 +27,11 @@ export const createSubmission = async (
     return rep.status(400).send(createLikesResponse);
   }
   const createSubmissionResponse: any = await submissionService.createRecord(
-    body.contest_type,
+    body.content_type,
     body.user_uuid,
     body.contest_uuid,
     uuid,
-    body.contest_url,
+    body.content_url,
     body.file_url,
     body.repo_url
   );

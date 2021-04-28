@@ -93,7 +93,7 @@ export const deleteAttachment = async (
     return rep.status(400).send(urlResponse);
   }
   if (urlResponse.rows[0].avatar != '') {
-    await deleteFile(urlResponse.rows[0].avatar);
+    await deleteFile(urlResponse.rows[0].url);
   }
   return rep.status(200).send({ result: 'Attachment deleted.' });
 };
