@@ -8,13 +8,12 @@ export const getAllSubmissions = async (
 ) => {
   const params: any = req.params;
   const getAllSubmissionsResponse: any = await submissionService.getAllRecords(
-    params.contest_uuid,
-    params.user_uuid
+    params.contest_uuid
   );
   if (getAllSubmissionsResponse.error) {
     return rep.status(400).send(getAllSubmissionsResponse);
   }
-  return { contestList: getAllSubmissionsResponse.rows[0] };
+  return { contestList: getAllSubmissionsResponse.rows };
 };
 
 export const createSubmission = async (

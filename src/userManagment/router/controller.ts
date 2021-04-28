@@ -9,7 +9,9 @@ export const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
   if (getUserResponse.error) {
     return rep.status(400).send(getUserResponse);
   }
-  return { user: getUserResponse.rows[0] };
+  let userData = getUserResponse.rows[0];
+  userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+  return { user: userData };
 };
 
 export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
@@ -32,7 +34,7 @@ export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
     return rep.status(400).send(createRecordResponse);
   }
   if (avatarBase64 != undefined && avatarUrl != '') {
-    uploadFile(avatarBase64, `${uuid}/${avatarUrl}`);
+    uploadFile(Buffer.from(avatarBase64, 'base64'), `${uuid}/${avatarUrl}`);
   }
   return rep.status(201).send({ result: 'User has been created.' });
 };
@@ -75,7 +77,7 @@ export const updateUser = async (req: FastifyRequest, rep: FastifyReply) => {
       if (!exists.error) {
         await deleteFile(avatarUrlResponse.rows[0].avatar);
       }
-      uploadFile(avatarBase64, avatarUrl);
+      uploadFile(Buffer.from(avatarBase64, 'base64'), avatarUrl);
     }
   }
   return rep.status(200).send({ result: 'User updated.' });

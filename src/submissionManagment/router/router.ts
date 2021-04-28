@@ -8,7 +8,7 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: 'GET',
-    url: '/submissions/:contest_uuid/:user_uuid',
+    url: '/submissions/:contest_uuid',
     handler: controller.getAllSubmissions,
   },
   {
