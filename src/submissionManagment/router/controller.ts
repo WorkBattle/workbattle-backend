@@ -19,9 +19,11 @@ export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
     return rep.status(400).send(getAllCommentsResponse);
   }
   let commentsList = getAllCommentsResponse.rows;
-  commentsList = commentsList.map((comment: any) => {
+  commentsList = commentsList.map(async (comment: any) => {
     const commentUuid = comment.uuid;
-    const getAttachmentResponse: any = attachmentService.getRecord(commentUuid);
+    const getAttachmentResponse: any = await attachmentService.getRecord(
+      commentUuid
+    );
     if (getAttachmentResponse.error) {
       return rep.status(400).send(getAttachmentResponse);
     }
@@ -35,9 +37,13 @@ export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
     comment.attachments = attachments;
     return comment;
   });
+  let awaittedComments: any = [];
+  for (let comment of commentsList) {
+    awaittedComments.push(await comment);
+  }
   return rep.status(200).send({
     submission: getSubmissionResponse.rows[0],
-    commentsList: commentsList,
+    commentsList: awaittedComments,
   });
 };
 
