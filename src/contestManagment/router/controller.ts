@@ -19,7 +19,7 @@ export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
   let contestDetailsObject = getContestResponse.rows[0];
   let allSubmissions = getAllSubmissionsResponse.rows;
   allSubmissions = allSubmissions.map(async (submissionObject: any) => {
-    const user_uuid = submissionObject.author_uuid;
+    const user_uuid = submissionObject.user_uuid;
     const getUserResponse: any = await userService.getRecord(user_uuid);
     if (getUserResponse.error) {
       return rep.status(400).send(getUserResponse);
@@ -29,9 +29,14 @@ export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
     submissionObject.user = userData;
     return submissionObject;
   });
+  let awaitedSubmissions: any = [];
+  for (let submission of allSubmissions) {
+    awaitedSubmissions.push(await submission);
+  }
+  console.log(awaitedSubmissions);
   return rep.status(200).send({
     contest: contestDetailsObject,
-    submissionList: allSubmissions,
+    submissionList: awaitedSubmissions,
   });
 };
 
