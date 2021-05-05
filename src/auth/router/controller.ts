@@ -6,8 +6,9 @@ import { createToken } from '../utils/createToken';
 export const authLogin = async (req: FastifyRequest, rep: any) => {
   const body: any = req.body;
   const username = body.username;
+  const email = body.email;
   const password = body.password;
-  const getUserResponse: any = await userService.getRecord('', username);
+  const getUserResponse: any = await userService.getRecord('', username, email);
   if (getUserResponse.error) {
     return rep.status(400).send(getUserResponse);
   }

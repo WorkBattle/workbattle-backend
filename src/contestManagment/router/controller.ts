@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import submissionService from '../../submissionManagment/utils/submissionService';
 import userService from '../../userManagment/utils/userService';
 import contestService from '../utils/contestService';
+import { toCamel } from 'snake-camel';
 
 export const getContest = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
@@ -34,10 +35,11 @@ export const getContest = async (req: any, rep: FastifyReply) => {
   });
   let awaitedSubmissions: any = [];
   for (let submission of allSubmissions) {
-    awaitedSubmissions.push(await submission);
+    let tempSub = await submission;
+    awaitedSubmissions.push(toCamel(tempSub));
   }
   let contestResponse: { [key: string]: any } = {
-    contest: contestDetailsObject,
+    contest: toCamel(contestDetailsObject),
     submissionList: awaitedSubmissions,
   };
   const accessToken = req.requestContext.get('token');
@@ -53,7 +55,9 @@ export const getAllContests = async (req: any, rep: FastifyReply) => {
     return rep.status(400).send(getAllContestsResponse);
   }
   let contestResponse: { [key: string]: any } = {
-    contestList: getAllContestsResponse.rows,
+    contestList: getAllContestsResponse.rows.map((contest: any) =>
+      toCamel(contest)
+    ),
   };
   const accessToken = req.requestContext.get('token');
   if (accessToken != undefined) {

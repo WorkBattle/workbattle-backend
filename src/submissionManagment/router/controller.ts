@@ -3,6 +3,7 @@ import attachmentService from '../attachmentManagment/attachmentService';
 import commentsService from '../commentsManagment/commentsService';
 import likesService from '../likesManagment/likesService';
 import submissionService from '../utils/submissionService';
+import { toCamel } from 'snake-camel';
 
 export const getSubmission = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
@@ -51,7 +52,7 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   if (accessToken != undefined) {
     submissionResponse['token'] = accessToken.access;
   }
-  return rep.status(200).send(submissionResponse);
+  return rep.status(200).send(toCamel(submissionResponse));
 };
 
 export const createSubmission = async (req: any, rep: FastifyReply) => {

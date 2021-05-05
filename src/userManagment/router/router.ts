@@ -13,6 +13,11 @@ export const routes: RouteOptions[] = [
     handler: controller.getUser,
   },
   {
+    method: 'GET',
+    url: '/user/getInfo',
+    handler: controller.getInfo,
+  },
+  {
     method: 'POST',
     url: '/user',
     handler: controller.createUser,
