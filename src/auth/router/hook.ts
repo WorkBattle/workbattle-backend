@@ -4,10 +4,11 @@ import { createToken } from '../utils/createToken';
 export function isAuth(req: any, rep: FastifyReply, done: any) {
   const auth = req.headers.authorization;
   try {
-    const payload = verify(
+    const payload: any = verify(
       auth.split(' ')[1],
       process.env.ACCESS_TOKEN_SECRET!
     );
+    req.requestContext.set('user', { uuid: payload.userUuid });
     done();
     return;
   } catch (errAccess) {
@@ -23,6 +24,7 @@ export function isAuth(req: any, rep: FastifyReply, done: any) {
         process.env.ACCESS_TOKEN_SECRET!
       );
       req.requestContext.set('token', { access: accessToken });
+      req.requestContext.set('user', { uuid: payload.userUuid });
       done();
       return;
     } catch (errRefreash) {

@@ -38,7 +38,7 @@ class SubmissionService implements IService {
   }
   public async updateRecord(
     uuid: string,
-    contest_type?: string,
+    content_type?: string,
     user_uuid?: string,
     contest_uuid?: string,
     likes_uuid?: string,
@@ -49,8 +49,8 @@ class SubmissionService implements IService {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams(uuid, 'submission', {
-      contest_type: contest_type,
+    } = constructUpdateQueryStringBasedOnParams('submission', uuid, {
+      content_type: content_type,
       user_uuid: user_uuid,
       contest_uuid,
       likes_uuid: likes_uuid,

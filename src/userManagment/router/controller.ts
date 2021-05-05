@@ -24,9 +24,8 @@ export const getUser = async (req: any, rep: FastifyReply) => {
 };
 
 export const getInfo = async (req: any, rep: FastifyReply) => {
-  const cookieToken = req.cookies.jid;
-  const payload: any = verify(cookieToken, process.env.REFRESH_TOKEN_SECRET!);
-  const getUserResponse: any = await userService.getRecord(payload.userUuid);
+  const userUuid = req.requestContext.get('user').uuid;
+  const getUserResponse: any = await userService.getRecord(userUuid);
   if (getUserResponse.error) {
     return rep.status(400).send(getUserResponse);
   }
