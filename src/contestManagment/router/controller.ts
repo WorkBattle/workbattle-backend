@@ -3,6 +3,7 @@ import submissionService from '../../submissionManagment/utils/submissionService
 import userService from '../../userManagment/utils/userService';
 import contestService from '../utils/contestService';
 import { toCamel } from 'snake-camel';
+import likesService from '../../submissionManagment/likesManagment/likesService';
 
 export const getContest = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
@@ -36,6 +37,11 @@ export const getContest = async (req: any, rep: FastifyReply) => {
   let awaitedSubmissions: any = [];
   for (let submission of allSubmissions) {
     let tempSub = await submission;
+    const getLikesResponse: any = await likesService.getRecord(
+      tempSub.likes_uuid
+    );
+    tempSub.likes = getLikesResponse.rows[0].likes;
+    delete tempSub.likes_uuid;
     awaitedSubmissions.push(toCamel(tempSub));
   }
   let contestResponse: { [key: string]: any } = {
@@ -71,12 +77,12 @@ export const createContest = async (req: any, rep: FastifyReply) => {
   const createContestReponse: any = await contestService.createRecord(
     body.title,
     body.description,
-    body.task_description,
+    body.taskDescription,
     body.closed,
-    body.author_uuid,
-    body.contest_start,
-    body.contest_stop,
-    body.contest_type
+    body.authorUuid,
+    body.contestStart,
+    body.contestStop,
+    body.contestType
   );
 
   if (createContestReponse.error) {
@@ -98,12 +104,12 @@ export const updateContest = async (req: any, rep: FastifyReply) => {
     body.uuid,
     body.title,
     body.description,
-    body.task_description,
+    body.taskDescription,
     body.closed,
-    body.author_uuid,
-    body.contest_start,
-    body.contest_stop,
-    body.contest_type
+    body.authorUuid,
+    body.contestStart,
+    body.contestStop,
+    body.contestType
   );
   if (updateContestResponse.error) {
     return rep.status(400).send(updateContestResponse);

@@ -19,6 +19,14 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   if (getAllCommentsResponse.error) {
     return rep.status(400).send(getAllCommentsResponse);
   }
+  let submission = getSubmissionResponse.rows[0];
+  const getLikesResponse: any = await likesService.getRecord(
+    submission.likes_uuid
+  );
+  submission.likes = getLikesResponse.rows[0].likes;
+  submission.dislikes = getLikesResponse.rows[0].dislikes;
+  submission.liked = true;
+  delete submission.likes_uuid;
   let commentsList = getAllCommentsResponse.rows;
   commentsList = commentsList.map(async (comment: any) => {
     const commentUuid = comment.uuid;
@@ -45,7 +53,7 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
     awaittedComments.push(await comment);
   }
   let submissionResponse: { [key: string]: any } = {
-    submission: getSubmissionResponse.rows[0],
+    submission: submission,
     commentsList: awaittedComments,
   };
   const accessToken = req.requestContext.get('token');
@@ -62,13 +70,13 @@ export const createSubmission = async (req: any, rep: FastifyReply) => {
     return rep.status(400).send(createLikesResponse);
   }
   const createSubmissionResponse: any = await submissionService.createRecord(
-    body.content_type,
-    body.user_uuid,
-    body.contest_uuid,
+    body.contentType,
+    body.userUuid,
+    body.contestUuid,
     uuid,
-    body.content_url,
-    body.file_url,
-    body.repo_url
+    body.contentUrl,
+    body.fileUrl,
+    body.repoUrl
   );
   if (createSubmissionResponse.error) {
     return rep.status(400).send(createSubmissionResponse);
@@ -87,13 +95,13 @@ export const updateSubmission = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const updateSubmissionResponse: any = await submissionService.updateRecord(
     body.uuid,
-    body.contest_type,
-    body.user_uuid,
-    body.contest_uuid,
-    body.likes_uuid,
-    body.contest_url,
-    body.file_url,
-    body.repo_url
+    body.contesType,
+    body.userUuid,
+    body.contestUuid,
+    body.likesUuid,
+    body.contestUrl,
+    body.fileUrl,
+    body.repoUrl
   );
   if (updateSubmissionResponse.error) {
     return rep.status(400).send(updateSubmissionResponse);
@@ -137,11 +145,40 @@ export const deleteSubmission = async (req: any, rep: FastifyReply) => {
 };
 
 export const updateLikes = async (req: any, rep: FastifyReply) => {
-  const body: any = req.body;
+  const params: any = req.params;
+  const getSubmissionResponse: any = await submissionService.getRecord(
+    params.uuid
+  );
+  const getLikesResponse: any = await likesService.getRecord(
+    getSubmissionResponse.rows[0].likes_uuid
+  );
   const updateLikesResponse: any = await likesService.updateRecord(
-    body.uuid,
-    body.likes,
-    body.dislikes
+    getSubmissionResponse.rows[0].likes_uuid,
+    getLikesResponse.rows[0].likes + 1
+  );
+  if (updateLikesResponse.error) {
+    return rep.status(400).send(updateLikesResponse);
+  }
+  let submissionResponse: { [key: string]: any } = {
+    result: 'Likes updated.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(submissionResponse);
+};
+export const updateDislikes = async (req: any, rep: FastifyReply) => {
+  const params: any = req.params;
+  const getSubmissionResponse: any = await submissionService.getRecord(
+    params.uuid
+  );
+  const getLikesResponse: any = await likesService.getRecord(
+    getSubmissionResponse.rows[0].likes_uuid
+  );
+  const updateLikesResponse: any = await likesService.updateRecord(
+    getLikesResponse.rows[0].uuid,
+    getLikesResponse.rows[0].dislikes + 1
   );
   if (updateLikesResponse.error) {
     return rep.status(400).send(updateLikesResponse);

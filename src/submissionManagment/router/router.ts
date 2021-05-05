@@ -27,8 +27,13 @@ export const routes: RouteOptions[] = [
     handler: controller.deleteSubmission,
   },
   {
-    method: 'PATCH',
-    url: '/submission/likes',
+    method: 'POST',
+    url: '/submission/:uuid/likes',
+    handler: controller.updateLikes,
+  },
+  {
+    method: 'POST',
+    url: '/submission/:uuid/dislikes',
     handler: controller.updateLikes,
   },
 ];

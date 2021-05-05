@@ -32,7 +32,7 @@ class likesService implements IService {
     const {
       queryString,
       valuesArray,
-    } = constructUpdateQueryStringBasedOnParams(uuid, 'likes_dislikes', {
+    } = constructUpdateQueryStringBasedOnParams('likes_dislikes', uuid, {
       likes: likes,
       dislikes: dislikes,
     });
