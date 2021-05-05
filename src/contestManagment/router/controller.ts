@@ -3,7 +3,7 @@ import submissionService from '../../submissionManagment/utils/submissionService
 import userService from '../../userManagment/utils/userService';
 import contestService from '../utils/contestService';
 
-export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
+export const getContest = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const getContestResponse: any = await contestService.getRecord(params.uuid);
 
@@ -25,7 +25,10 @@ export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
       return rep.status(400).send(getUserResponse);
     }
     let userData = getUserResponse.rows[0];
-    userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+    delete userData.password;
+    if (userData.avatar != '') {
+      userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+    }
     submissionObject.user = userData;
     return submissionObject;
   });
@@ -33,25 +36,33 @@ export const getContest = async (req: FastifyRequest, rep: FastifyReply) => {
   for (let submission of allSubmissions) {
     awaitedSubmissions.push(await submission);
   }
-  console.log(awaitedSubmissions);
-  return rep.status(200).send({
+  let contestResponse: { [key: string]: any } = {
     contest: contestDetailsObject,
     submissionList: awaitedSubmissions,
-  });
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    contestResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(contestResponse);
 };
 
-export const getAllContests = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const getAllContests = async (req: any, rep: FastifyReply) => {
   const getAllContestsResponse: any = await contestService.getAllRecords();
   if (getAllContestsResponse.error) {
     return rep.status(400).send(getAllContestsResponse);
   }
-  return { contestList: getAllContestsResponse.rows };
+  let contestResponse: { [key: string]: any } = {
+    contestList: getAllContestsResponse.rows,
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    contestResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(contestResponse);
 };
 
-export const createContest = async (req: FastifyRequest, rep: FastifyReply) => {
+export const createContest = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const createContestReponse: any = await contestService.createRecord(
     body.title,
@@ -67,10 +78,17 @@ export const createContest = async (req: FastifyRequest, rep: FastifyReply) => {
   if (createContestReponse.error) {
     return rep.status(400).send(createContestReponse);
   }
-  return rep.status(201).send({ result: 'Created contest.' });
+  let contestResponse: { [key: string]: any } = {
+    result: 'Created contest.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    contestResponse['token'] = accessToken.access;
+  }
+  return rep.status(201).send(contestResponse);
 };
 
-export const updateContest = async (req: FastifyRequest, rep: FastifyReply) => {
+export const updateContest = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const updateContestResponse: any = await contestService.updateRecord(
     body.uuid,
@@ -86,10 +104,15 @@ export const updateContest = async (req: FastifyRequest, rep: FastifyReply) => {
   if (updateContestResponse.error) {
     return rep.status(400).send(updateContestResponse);
   }
-  return rep.status(200).send({ result: 'Contest Updated.' });
+  let contestResponse: { [key: string]: any } = { result: 'Contest Updated.' };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    contestResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(contestResponse);
 };
 
-export const deleteContest = async (req: FastifyRequest, rep: FastifyReply) => {
+export const deleteContest = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const deleteContestResponse: any = await contestService.deleteRecord(
     params.uuid
@@ -97,5 +120,10 @@ export const deleteContest = async (req: FastifyRequest, rep: FastifyReply) => {
   if (deleteContestResponse.error) {
     return rep.status(400).send(deleteContestResponse);
   }
-  return rep.status(200).send({ result: 'Contest Deleted.' });
+  let contestResponse: { [key: string]: any } = { result: 'Contest Deleted.' };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    contestResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(contestResponse);
 };

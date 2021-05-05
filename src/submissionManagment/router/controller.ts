@@ -4,7 +4,7 @@ import commentsService from '../commentsManagment/commentsService';
 import likesService from '../likesManagment/likesService';
 import submissionService from '../utils/submissionService';
 
-export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
+export const getSubmission = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const getSubmissionResponse: any = await submissionService.getRecord(
     params.uuid
@@ -30,7 +30,9 @@ export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
     let attachments = getAttachmentResponse.rows;
     if (attachments != []) {
       attachments = attachments.map((attachment: any) => {
-        attachment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${attachment.url}`;
+        if (attachment.url != '') {
+          attachment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${attachment.url}`;
+        }
         return attachment;
       });
     }
@@ -41,16 +43,18 @@ export const getSubmission = async (req: FastifyRequest, rep: FastifyReply) => {
   for (let comment of commentsList) {
     awaittedComments.push(await comment);
   }
-  return rep.status(200).send({
+  let submissionResponse: { [key: string]: any } = {
     submission: getSubmissionResponse.rows[0],
     commentsList: awaittedComments,
-  });
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(submissionResponse);
 };
 
-export const createSubmission = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const createSubmission = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const { createLikesResponse, uuid } = await likesService.createRecord(0, 0);
   if (createLikesResponse.error) {
@@ -68,13 +72,17 @@ export const createSubmission = async (
   if (createSubmissionResponse.error) {
     return rep.status(400).send(createSubmissionResponse);
   }
-  return rep.status(201).send({ result: 'Submission has been created.' });
+  let submissionResponse: { [key: string]: any } = {
+    result: 'Submission has been created.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(201).send(submissionResponse);
 };
 
-export const updateSubmission = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const updateSubmission = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const updateSubmissionResponse: any = await submissionService.updateRecord(
     body.uuid,
@@ -89,13 +97,17 @@ export const updateSubmission = async (
   if (updateSubmissionResponse.error) {
     return rep.status(400).send(updateSubmissionResponse);
   }
-  return rep.status(200).send({ result: 'Submission updated.' });
+  let submissionResponse: { [key: string]: any } = {
+    result: 'Submission updated.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(submissionResponse);
 };
 
-export const deleteSubmission = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const deleteSubmission = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const {
     deleteSubmissionResponse,
@@ -113,10 +125,17 @@ export const deleteSubmission = async (
   if (deleteRelatedLikesRelationResponse.error) {
     return rep.status(400).send(deleteRelatedLikesRelationResponse);
   }
-  return rep.status(200).send({ result: 'Submission deleted.' });
+  let submissionResponse: { [key: string]: any } = {
+    result: 'Submission deleted.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(submissionResponse);
 };
 
-export const updateLikes = async (req: FastifyRequest, rep: FastifyReply) => {
+export const updateLikes = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const updateLikesResponse: any = await likesService.updateRecord(
     body.uuid,
@@ -126,5 +145,12 @@ export const updateLikes = async (req: FastifyRequest, rep: FastifyReply) => {
   if (updateLikesResponse.error) {
     return rep.status(400).send(updateLikesResponse);
   }
-  return rep.status(200).send({ result: 'Likes updated.' });
+  let submissionResponse: { [key: string]: any } = {
+    result: 'Likes updated.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    submissionResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(submissionResponse);
 };
