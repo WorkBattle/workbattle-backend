@@ -23,8 +23,8 @@ export const createComment = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const createCommentResponse: any = await commentsService.createRecord(
     body.text,
-    body.submission_uuid,
-    body.user_uuid
+    body.submissionUuid,
+    body.userUuid
   );
   if (createCommentResponse.error) {
     return rep.status(400).send(createCommentResponse);
@@ -44,8 +44,8 @@ export const updateComment = async (req: any, rep: FastifyReply) => {
   const updateCommentsResponse: any = await commentsService.updateRecord(
     body.uuid,
     body.text,
-    body.submission_uuid,
-    body.user_uuid
+    body.submissionUuid,
+    body.userUuid
   );
   if (updateCommentsResponse.error) {
     return rep.status(400).send(updateCommentsResponse);

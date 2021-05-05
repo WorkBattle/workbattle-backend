@@ -36,7 +36,7 @@ export const createAttachment = async (req: any, rep: FastifyReply) => {
   const {
     createAttachmentResponse,
     uuid,
-  }: any = await attachmentService.createRecord(body.url, body.comment_uuid);
+  }: any = await attachmentService.createRecord(body.url, body.commentUuid);
   if (createAttachmentResponse.error) {
     return rep.status(400).send(createAttachmentResponse);
   }
@@ -63,7 +63,7 @@ export const updateAttachment = async (req: any, rep: FastifyReply) => {
   }: any = await attachmentService.updateRecord(
     body.uuid,
     body.url,
-    body.comment_uuid
+    body.commentUuid
   );
   if (updateAttachmentResponse.error) {
     return rep.status(400).send(updateAttachmentResponse);

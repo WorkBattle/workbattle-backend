@@ -4,6 +4,7 @@ import commentsService from '../commentsManagment/commentsService';
 import likesService from '../likesManagment/likesService';
 import submissionService from '../utils/submissionService';
 import { toCamel } from 'snake-camel';
+import userService from '../../userManagment/utils/userService';
 
 export const getSubmission = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
@@ -27,6 +28,20 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   submission.dislikes = getLikesResponse.rows[0].dislikes;
   submission.liked = true;
   delete submission.likes_uuid;
+
+  const user_uuid = submission.user_uuid;
+  const getUserResponse: any = await userService.getRecord(user_uuid);
+  if (getUserResponse.error) {
+    return rep.status(400).send(getUserResponse);
+  }
+  let userData = getUserResponse.rows[0];
+  delete userData.password;
+  if (userData.avatar != '') {
+    userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+  }
+  submission.user = userData;
+  delete submission.user_uuid;
+
   let commentsList = getAllCommentsResponse.rows;
   commentsList = commentsList.map(async (comment: any) => {
     const commentUuid = comment.uuid;
@@ -50,7 +65,20 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   });
   let awaittedComments: any = [];
   for (let comment of commentsList) {
-    awaittedComments.push(await comment);
+    let awComment = await comment;
+    const user_uuid = awComment.user_uuid;
+    const getUserResponse: any = await userService.getRecord(user_uuid);
+    if (getUserResponse.error) {
+      return rep.status(400).send(getUserResponse);
+    }
+    let userData = getUserResponse.rows[0];
+    delete userData.password;
+    if (userData.avatar != '') {
+      userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+    }
+    awComment.user = userData;
+    delete awComment.user_uuid;
+    awaittedComments.push(awComment);
   }
   let submissionResponse: { [key: string]: any } = {
     submission: submission,
