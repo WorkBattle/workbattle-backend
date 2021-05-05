@@ -2,10 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { checkIfExists, deleteFile, uploadFile } from '../../../aws/fileUtils';
 import attachmentService from '../attachmentService';
 
-export const getAllAttachments = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const getAllAttachments = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const getCommentResponse: any = await attachmentService.getAllRecords(
     params.uuid
@@ -16,17 +13,23 @@ export const getAllAttachments = async (
   let comments = getCommentResponse.rows;
   if (comments != []) {
     comments = comments.map((comment: any) => {
-      comment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${comment.url}`;
+      if (comment.url != '') {
+        comment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${comment.url}`;
+      }
       return comment;
     });
   }
-  return rep.status(200).send({ attachmentList: getCommentResponse.rows });
+  let attachmentResponse: { [key: string]: any } = {
+    attachmentList: getCommentResponse.rows,
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    attachmentResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(attachmentResponse);
 };
 
-export const createAttachment = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const createAttachment = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const attachment64 = body.attachment64;
 
@@ -41,14 +44,17 @@ export const createAttachment = async (
   if (attachment64 != undefined && body.url != '') {
     uploadFile(Buffer.from(attachment64, 'base64'), `${uuid}/${body.url}`);
   }
-
-  return rep.status(201).send({ result: 'Attachment has been created.' });
+  let attachmentResponse: { [key: string]: any } = {
+    result: 'Attachment has been created.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    attachmentResponse['token'] = accessToken.access;
+  }
+  return rep.status(201).send(attachmentResponse);
 };
 
-export const updateAttachment = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const updateAttachment = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const attachment64 = body.attachment64;
   const {
@@ -80,13 +86,17 @@ export const updateAttachment = async (
       uploadFile(Buffer.from(attachment64, 'base64'), body.url);
     }
   }
-  return rep.status(200).send({ result: 'Attachment updated.' });
+  let attachmentResponse: { [key: string]: any } = {
+    result: 'Attachment updated.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    attachmentResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(attachmentResponse);
 };
 
-export const deleteAttachment = async (
-  req: FastifyRequest,
-  rep: FastifyReply
-) => {
+export const deleteAttachment = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const {
     deleteAttachmentResponse,
@@ -101,5 +111,12 @@ export const deleteAttachment = async (
   if (urlResponse.rows[0].avatar != '') {
     await deleteFile(urlResponse.rows[0].url);
   }
-  return rep.status(200).send({ result: 'Attachment deleted.' });
+  let attachmentResponse: { [key: string]: any } = {
+    result: 'Attachment deleted.',
+  };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    attachmentResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(attachmentResponse);
 };

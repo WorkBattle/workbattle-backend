@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { checkIfExists, deleteFile, uploadFile } from '../../aws/fileUtils';
 import userService from '../utils/userService';
 
-export const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
+export const getUser = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const userUuid = params.uuid;
   const getUserResponse: any = await userService.getRecord(userUuid);
@@ -10,8 +10,16 @@ export const getUser = async (req: FastifyRequest, rep: FastifyReply) => {
     return rep.status(400).send(getUserResponse);
   }
   let userData = getUserResponse.rows[0];
-  userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
-  return { user: userData };
+  delete userData.password;
+  if (userData.avatar != '') {
+    userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+  }
+  let userResponse: { [key: string]: any } = { user: userData };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    userResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(userResponse);
 };
 
 export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
@@ -39,7 +47,7 @@ export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
   return rep.status(201).send({ result: 'User has been created.' });
 };
 
-export const updateUser = async (req: FastifyRequest, rep: FastifyReply) => {
+export const updateUser = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
 
   const avatarBase64 = body.avatar64;
@@ -80,10 +88,15 @@ export const updateUser = async (req: FastifyRequest, rep: FastifyReply) => {
       uploadFile(Buffer.from(avatarBase64, 'base64'), avatarUrl);
     }
   }
-  return rep.status(200).send({ result: 'User updated.' });
+  let userResponse: { [key: string]: any } = { result: 'User updated.' };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    userResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(userResponse);
 };
 
-export const deleteUser = async (req: FastifyRequest, rep: FastifyReply) => {
+export const deleteUser = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
   const { deleteUserResponse, avatarUrl }: any = await userService.deleteRecord(
     params.uuid
@@ -97,5 +110,10 @@ export const deleteUser = async (req: FastifyRequest, rep: FastifyReply) => {
   if (avatarUrl.rows[0].avatar != '') {
     await deleteFile(avatarUrl.rows[0].avatar);
   }
-  return rep.status(200).send({ result: 'User deleted.' });
+  let userResponse: { [key: string]: any } = { result: 'User updated.' };
+  const accessToken = req.requestContext.get('token');
+  if (accessToken != undefined) {
+    userResponse['token'] = accessToken.access;
+  }
+  return rep.status(200).send(userResponse);
 };

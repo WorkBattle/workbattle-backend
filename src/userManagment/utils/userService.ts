@@ -94,12 +94,19 @@ class UserService implements IService {
     };
   }
   public async getRecord(
-    uuid: string
+    uuid: string,
+    username?: string
   ): Promise<QueryResult<any> | { error: any }> {
-    const getRecordQuery: string = `SELECT * FROM "user" WHERE uuid = $1`;
-    const getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
-      uuid,
-    ]);
+    let getRecordResponse;
+    if (uuid != '' && username == undefined) {
+      const getRecordQuery: string = `SELECT * FROM "user" WHERE uuid = $1`;
+      getRecordResponse = await postgresQueryExecutor(getRecordQuery, [uuid]);
+    } else {
+      const getRecordQuery: string = `SELECT * FROM "user" WHERE username = $1`;
+      getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
+        username,
+      ]);
+    }
     return getRecordResponse;
   }
 }

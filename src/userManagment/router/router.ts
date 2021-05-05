@@ -1,4 +1,5 @@
 import { RouteOptions, RegisterOptions } from 'fastify';
+import { isAuth } from '../../auth/router/hook';
 import * as controller from './controller';
 
 export const opts: RegisterOptions = {
