@@ -174,49 +174,87 @@ export const deleteSubmission = async (req: any, rep: FastifyReply) => {
 
 export const updateLikes = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
+  const userUuid = req.requestContext.get('user').uuid;
   const getSubmissionResponse: any = await submissionService.getRecord(
     params.uuid
   );
-  const getLikesResponse: any = await likesService.getRecord(
-    getSubmissionResponse.rows[0].likes_uuid
-  );
-  const updateLikesResponse: any = await likesService.updateRecord(
-    getSubmissionResponse.rows[0].likes_uuid,
-    getLikesResponse.rows[0].likes + 1
-  );
-  if (updateLikesResponse.error) {
-    return rep.status(400).send(updateLikesResponse);
+  if (getSubmissionResponse.error) {
+    return rep.status(400).send(getSubmissionResponse);
   }
-  let submissionResponse: { [key: string]: any } = {
-    result: 'Likes updated.',
-  };
-  const accessToken = req.requestContext.get('token');
-  if (accessToken != undefined) {
-    submissionResponse['token'] = accessToken.access;
+  const likesDislikesUuid = getSubmissionResponse.rows[0].likes_uuid;
+  const checkIfLiked: any = await likesService.IsLikeOrDislike(
+    likesDislikesUuid,
+    userUuid,
+    true
+  );
+  if (checkIfLiked.rows.length != 0) {
+    return rep.status(400).send('Like has already been set.');
   }
-  return rep.status(200).send(submissionResponse);
+  const checkIfDisliked: any = await likesService.IsLikeOrDislike(
+    likesDislikesUuid,
+    userUuid,
+    false
+  );
+  if (checkIfDisliked.rows.length !== 0) {
+    const deleteDislikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
+      likesDislikesUuid,
+      userUuid,
+      false
+    );
+    if (deleteDislikeResponse.error) {
+      return rep.status(400).send(deleteDislikeResponse);
+    }
+  }
+  const createLikeResponse: any = await likesService.createLikesOrDislikesRecord(
+    likesDislikesUuid,
+    userUuid,
+    true
+  );
+  if (createLikeResponse.error) {
+    return rep.status(400).send(createLikeResponse);
+  }
+  return rep.status(200).send('Like has been created.');
 };
 export const updateDislikes = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
+  const userUuid = req.requestContext.get('user').uuid;
   const getSubmissionResponse: any = await submissionService.getRecord(
     params.uuid
   );
-  const getLikesResponse: any = await likesService.getRecord(
-    getSubmissionResponse.rows[0].likes_uuid
-  );
-  const updateLikesResponse: any = await likesService.updateRecord(
-    getLikesResponse.rows[0].uuid,
-    getLikesResponse.rows[0].dislikes + 1
-  );
-  if (updateLikesResponse.error) {
-    return rep.status(400).send(updateLikesResponse);
+  if (getSubmissionResponse.error) {
+    return rep.status(400).send(getSubmissionResponse);
   }
-  let submissionResponse: { [key: string]: any } = {
-    result: 'Likes updated.',
-  };
-  const accessToken = req.requestContext.get('token');
-  if (accessToken != undefined) {
-    submissionResponse['token'] = accessToken.access;
+  const likesDislikesUuid = getSubmissionResponse.rows[0].likes_uuid;
+  const checkIfDisliked: any = await likesService.IsLikeOrDislike(
+    likesDislikesUuid,
+    userUuid,
+    false
+  );
+  if (checkIfDisliked.rows.length != 0) {
+    return rep.status(400).send('Dislike has already been set.');
   }
-  return rep.status(200).send(submissionResponse);
+  const checkIfLiked: any = await likesService.IsLikeOrDislike(
+    likesDislikesUuid,
+    userUuid,
+    true
+  );
+  if (checkIfLiked.rows.length != 0) {
+    const deleteLikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
+      likesDislikesUuid,
+      userUuid,
+      true
+    );
+    if (deleteLikeResponse.error) {
+      return rep.status(400).send(deleteLikeResponse);
+    }
+  }
+  const createDislikeResponse: any = await likesService.createLikesOrDislikesRecord(
+    likesDislikesUuid,
+    userUuid,
+    false
+  );
+  if (createDislikeResponse.error) {
+    return rep.status(400).send(createDislikeResponse);
+  }
+  return rep.status(200).send('Dislike has been created.');
 };
