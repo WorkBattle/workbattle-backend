@@ -187,8 +187,19 @@ export const updateLikes = async (req: any, rep: FastifyReply) => {
     userUuid,
     true
   );
-  if (checkIfLiked.rows.length != 0) {
+  if (checkIfLiked.rows.length != 0 && !req.body?.delete) {
     return rep.status(400).send('Like has already been set.');
+  }
+  if (req.body.delete == true) {
+    const deleteLikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
+      likesDislikesUuid,
+      userUuid,
+      true
+    );
+    if (deleteLikeResponse.error) {
+      return rep.status(400).send(deleteLikeResponse);
+    }
+    return rep.status(200).send('Like has been unset.');
   }
   const checkIfDisliked: any = await likesService.IsLikeOrDislike(
     likesDislikesUuid,
@@ -230,9 +241,21 @@ export const updateDislikes = async (req: any, rep: FastifyReply) => {
     userUuid,
     false
   );
-  if (checkIfDisliked.rows.length != 0) {
+  if (checkIfDisliked.rows.length != 0 && !req.body?.delete) {
     return rep.status(400).send('Dislike has already been set.');
   }
+  if (req.body.delete == true) {
+    const deleteDislikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
+      likesDislikesUuid,
+      userUuid,
+      false
+    );
+    if (deleteDislikeResponse.error) {
+      return rep.status(400).send(deleteDislikeResponse);
+    }
+    return rep.status(200).send('Dislike has been unset.');
+  }
+
   const checkIfLiked: any = await likesService.IsLikeOrDislike(
     likesDislikesUuid,
     userUuid,
