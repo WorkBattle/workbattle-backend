@@ -7,7 +7,7 @@ import * as submission from '../submissionManagment/router';
 import * as comment from '../submissionManagment/commentsManagment/router';
 import * as attachment from '../submissionManagment/attachmentManagment/router';
 import * as auth from '../auth/router';
-import { aplyIsAuthOnRequestHook } from './utils/aplyHooks';
+import { aplyIsAuthPreValidationHook } from './utils/aplyHooks';
 
 const routers: any[] = [contest, user, submission, comment, attachment, auth];
 
@@ -22,7 +22,7 @@ export default (server: FastifyInstance<Server>) => {
   routers.forEach((router) => {
     let { routes, opts } = router;
 
-    if (router != auth) routes = aplyIsAuthOnRequestHook(routes);
+    if (router != auth) routes = aplyIsAuthPreValidationHook(routes);
 
     const plugin = (
       server: FastifyInstance,

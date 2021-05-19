@@ -5,6 +5,7 @@ import likesService from '../likesManagment/likesService';
 import submissionService from '../utils/submissionService';
 import { toCamel } from 'snake-camel';
 import userService from '../../userManagment/utils/userService';
+import contestService from '../../contestManagment/utils/contestService';
 
 export const getSubmission = async (req: any, rep: FastifyReply) => {
   const params: any = req.params;
@@ -93,14 +94,25 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
 
 export const createSubmission = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
+  const userUuid = body.userUuid;
+  const contestUuid = body.contestUuid;
+  const getContestResponse: any = await contestService.getRecord(contestUuid);
+  if (getContestResponse.error) {
+    return rep.status(400).send(getContestResponse);
+  }
+  if (userUuid == getContestResponse.rows[0].author_uuid) {
+    return rep
+      .status(400)
+      .send({ error: 'Author of contest cannot create submission.' });
+  }
   const { createLikesResponse, uuid } = await likesService.createRecord(0, 0);
   if (createLikesResponse.error) {
     return rep.status(400).send(createLikesResponse);
   }
   const createSubmissionResponse: any = await submissionService.createRecord(
     body.contentType,
-    body.userUuid,
-    body.contestUuid,
+    userUuid,
+    contestUuid,
     uuid,
     body.contentUrl,
     body.fileUrl,

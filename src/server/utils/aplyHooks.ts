@@ -1,9 +1,9 @@
 import { RouteOptions } from 'fastify';
 import { isAuth } from '../../auth/router/hook';
 
-export const aplyIsAuthOnRequestHook = (routes: RouteOptions[]) => {
+export const aplyIsAuthPreValidationHook = (routes: RouteOptions[]) => {
   routes.forEach((route: RouteOptions) => {
-    route.onRequest = isAuth;
+    route.preValidation = isAuth;
   });
   return routes;
 };
