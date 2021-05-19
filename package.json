@@ -19,6 +19,7 @@
     "@testdeck/mocha": "^0.1.2",
     "@types/pg": "^7.14.11",
     "aws-sdk": "^2.890.0",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "chai": "^4.3.3",
     "env-cmd": "^10.1.0",
