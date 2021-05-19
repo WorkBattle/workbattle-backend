@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import userService from '../../userManagment/utils/userService';
 import { hash, compare } from 'bcryptjs';
 import { createToken } from '../utils/createToken';
+import axios from 'axios';
 
 export const authLogin = async (req: FastifyRequest, rep: any) => {
   const body: any = req.body;
@@ -64,4 +65,27 @@ export const authRegister = async (req: FastifyRequest, rep: any) => {
   });
 
   return rep.status(201).send({ token: accessToken, userUuid: uuid });
+};
+
+export const authLoginGit = async (req: FastifyRequest, rep: any) => {
+  const body: any = req.query;
+  const requestToken = body.code;
+
+  const getAccessTokenResponse = await axios({
+    method: 'POST',
+    url: `https://github.com/login/oauth/access_token?client_id=${process.env.GIT_CLIENT}&client_secret=${process.env.GIT_SECRET}&code=${requestToken}`,
+    headers: {
+      accept: 'application/json',
+    },
+  });
+  const accessToken = getAccessTokenResponse.data.access_token;
+
+  const getGitUserData = await axios({
+    method: 'get',
+    url: `https://api.github.com/user`,
+    headers: {
+      Authorization: 'token ' + accessToken,
+    },
+  });
+  console.log(getGitUserData);
 };

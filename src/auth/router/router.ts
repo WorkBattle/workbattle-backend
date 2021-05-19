@@ -13,6 +13,11 @@ export const routes: RouteOptions[] = [
   },
   {
     method: 'POST',
+    url: '/github',
+    handler: controller.authLoginGit,
+  },
+  {
+    method: 'POST',
     url: '/register',
     handler: controller.authRegister,
   },
