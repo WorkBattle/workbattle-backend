@@ -45,10 +45,20 @@ export const authLogin = async (req: FastifyRequest, rep: any) => {
 
 export const authRegister = async (req: FastifyRequest, rep: any) => {
   const body: any = req.body;
+  const username = body.username;
+  const email = body.email;
+  if (!username || !email || !body.password) {
+    return rep
+      .status(400)
+      .send({
+        error:
+          'Username or Email or Password is not presented in body request.',
+      });
+  }
   const password = await hash(body.password, 12);
   const { uuid, createRecordResponse }: any = await userService.createRecord(
-    body.username,
-    body.email,
+    username,
+    email,
     password
   );
   if (createRecordResponse.error) {

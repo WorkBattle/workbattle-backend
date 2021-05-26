@@ -79,7 +79,13 @@ class UserService implements IService {
       avatarUrlResponse: getAvatarUrlResponse,
     };
   }
-  public async deleteRecord(uuid: string) {
+  public async deleteRecord(uuid: string, username?: string) {
+    if (username && uuid == '') {
+      return await postgresQueryExecutor(
+        `DELETE FROM "user" WHERE username = $1;`,
+        [username]
+      );
+    }
     const getAvatarUrl: string = 'SELECT avatar from "user" WHERE uuid = $1;';
     const getAvatarUrlResponse: any = await postgresQueryExecutor(
       getAvatarUrl,
