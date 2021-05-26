@@ -13,7 +13,8 @@ const routers: any[] = [contest, user, submission, comment, attachment, auth];
 
 export default (server: FastifyInstance<Server>) => {
   server.register(require('fastify-cors'), {
-    origin: 'http://localhost:4200',
+    origin: ['http://localhost:4200', 'https://workbattle.me'],
+    credentials: true,
   });
   server.register(require('fastify-cookie'), {
     secret: process.env.COOKIE_SECRET,
