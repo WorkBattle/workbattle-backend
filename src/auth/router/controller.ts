@@ -40,6 +40,8 @@ export const authLogin = async (req: FastifyRequest, rep: any) => {
     httpOnly: true,
     path: '/',
   });
+  rep.header('access-control-expose-headers', 'Set-Cookie');
+  rep;
   return rep.status(200).send({ token: accessToken });
 };
 
@@ -69,6 +71,8 @@ export const authRegister = async (req: FastifyRequest, rep: any) => {
     httpOnly: true,
     path: '/',
   });
+
+  rep.header('access-control-expose-headers', 'Set-Cookie');
 
   return rep.status(201).send({ token: accessToken, userUuid: uuid });
 };
