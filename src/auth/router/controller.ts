@@ -40,6 +40,7 @@ export const authLogin = async (req: FastifyRequest, rep: any) => {
   rep.setCookie('jid', refreashToken, {
     httpOnly: true,
     path: '/',
+    domain: '.workbattle.me',
   });
   return rep.status(200).send({ token: accessToken });
 };
@@ -70,6 +71,7 @@ export const authRegister = async (req: FastifyRequest, rep: any) => {
   rep.setCookie('jid', refreashToken, {
     httpOnly: true,
     path: '/',
+    domain: '.workbattle.me',
   });
 
   return rep.status(201).send({ token: accessToken, userUuid: uuid });
