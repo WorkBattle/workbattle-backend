@@ -19,6 +19,27 @@ export default (server: FastifyInstance<Server>) => {
     secret: process.env.COOKIE_SECRET,
   });
   server.register(fastifyRequestContextPlugin);
+  server.register(require('fastify-swagger'), {
+    swagger: {
+      info: {
+        title: 'Swagger for API integratoin',
+        description: 'testing the fastify swagger api',
+        version: '0.1.0',
+      },
+      host: 'localhost',
+      schemes: ['https'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      securityDefinitions: {
+        apiKey: {
+          type: 'apiKey',
+          name: 'apiKey',
+          in: 'header',
+        },
+      },
+    },
+    exposeRoute: true,
+  });
   routers.forEach((router) => {
     let { routes, opts } = router;
 

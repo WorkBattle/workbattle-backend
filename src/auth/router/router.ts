@@ -10,6 +10,13 @@ export const routes: RouteOptions[] = [
     method: 'POST',
     url: '/login',
     handler: controller.authLogin,
+    schema: {
+      body: {
+        username: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
   },
   {
     method: 'POST',
@@ -20,5 +27,12 @@ export const routes: RouteOptions[] = [
     method: 'POST',
     url: '/register',
     handler: controller.authRegister,
+    schema: {
+      body: {
+        username: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
   },
 ];
