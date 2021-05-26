@@ -39,7 +39,6 @@ export const authLogin = async (req: FastifyRequest, rep: any) => {
   );
   rep.setCookie('jid', refreashToken, {
     httpOnly: true,
-    path: '/',
   });
   return rep.status(200).send({ token: accessToken });
 };
