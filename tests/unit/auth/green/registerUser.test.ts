@@ -12,12 +12,12 @@ test('try to register with valid params url: "api/v1/auth/register"', async (t) 
     method: "POST",
     url: "/api/v1/auth/register",
     payload: {
-      username: "newUser",
+      username: "newUserRegister",
       email: "some@gmail.com",
       password: "12345678",
     },
   });
-  await userService.deleteRecord("", "newUser");
+  await userService.deleteRecord("", "newUserRegister");
   console.log(green("------------------------------------"));
   console.log(green("Response from registration: "));
   console.log(response.body);

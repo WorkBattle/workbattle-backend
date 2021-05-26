@@ -29,6 +29,7 @@ export const getAllAttachments = async (req: any, rep: FastifyReply) => {
   return rep.status(200).send(attachmentResponse);
 };
 
+// TODO: Add Multiple attachment support
 export const createAttachment = async (req: any, rep: FastifyReply) => {
   const body: any = req.body;
   const attachment64 = body.attachment64;
