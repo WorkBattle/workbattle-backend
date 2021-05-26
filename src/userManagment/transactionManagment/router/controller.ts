@@ -5,6 +5,7 @@ export const getAllTransaction = async (
   req: FastifyRequest,
   rep: FastifyReply
 ) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const getTransactionResponse: any = await transactionService.getAllRecords(
     params.user_uuid
@@ -19,6 +20,7 @@ export const createTransaction = async (
   req: FastifyRequest,
   rep: FastifyReply
 ) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const createTransactionResponse: any = await transactionService.createRecord(
     new Date(),

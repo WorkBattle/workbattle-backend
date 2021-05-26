@@ -7,6 +7,7 @@ import { authenticateWithLoginEmail } from '../utils/authenticateBasic';
 import { authenticateWithGit } from '../utils/authenticateOAuth';
 
 export const authLogin = async (req: FastifyRequest, rep: any) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const username = body.username;
   const email = body.email;
@@ -40,12 +41,11 @@ export const authLogin = async (req: FastifyRequest, rep: any) => {
     httpOnly: true,
     path: '/',
   });
-  rep.header('Access-Control-Allow-Credentials', 'true');
-  rep;
   return rep.status(200).send({ token: accessToken });
 };
 
 export const authRegister = async (req: FastifyRequest, rep: any) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const password = await hash(body.password, 12);
   const { uuid, createRecordResponse }: any = await userService.createRecord(
@@ -72,12 +72,11 @@ export const authRegister = async (req: FastifyRequest, rep: any) => {
     path: '/',
   });
 
-  rep.header('Access-Control-Allow-Credentials', 'true');
-
   return rep.status(201).send({ token: accessToken, userUuid: uuid });
 };
 
 export const authLoginGit = async (req: FastifyRequest, rep: any) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const requestToken = body.code;
   const getAccessTokenResponse = await axios.post(

@@ -8,6 +8,7 @@ import userService from '../../userManagment/utils/userService';
 import contestService from '../../contestManagment/utils/contestService';
 
 export const getSubmission = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const getSubmissionResponse: any = await submissionService.getRecord(
     params.uuid
@@ -93,6 +94,7 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
 };
 
 export const createSubmission = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const userUuid = body.userUuid;
   const contestUuid = body.contestUuid;
@@ -132,6 +134,7 @@ export const createSubmission = async (req: any, rep: FastifyReply) => {
 };
 
 export const updateSubmission = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const updateSubmissionResponse: any = await submissionService.updateRecord(
     body.uuid,
@@ -157,6 +160,7 @@ export const updateSubmission = async (req: any, rep: FastifyReply) => {
 };
 
 export const deleteSubmission = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const {
     deleteSubmissionResponse,
@@ -185,6 +189,7 @@ export const deleteSubmission = async (req: any, rep: FastifyReply) => {
 };
 
 export const updateLikes = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const userUuid = req.requestContext.get('user').uuid;
   const getSubmissionResponse: any = await submissionService.getRecord(
@@ -239,6 +244,7 @@ export const updateLikes = async (req: any, rep: FastifyReply) => {
   return rep.status(200).send('Like has been created.');
 };
 export const updateDislikes = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const userUuid = req.requestContext.get('user').uuid;
   const getSubmissionResponse: any = await submissionService.getRecord(

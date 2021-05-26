@@ -3,6 +3,7 @@ import { checkIfExists, deleteFile, uploadFile } from '../../../aws/fileUtils';
 import attachmentService from '../attachmentService';
 
 export const getAllAttachments = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const getCommentResponse: any = await attachmentService.getAllRecords(
     params.uuid
@@ -51,10 +52,12 @@ export const createAttachment = async (req: any, rep: FastifyReply) => {
   if (accessToken != undefined) {
     attachmentResponse['token'] = accessToken.access;
   }
+  rep.header('Access-Control-Allow-Credentials', 'true');
   return rep.status(201).send(attachmentResponse);
 };
 
 export const updateAttachment = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const attachment64 = body.attachment64;
   const {
@@ -97,6 +100,7 @@ export const updateAttachment = async (req: any, rep: FastifyReply) => {
 };
 
 export const deleteAttachment = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const {
     deleteAttachmentResponse,

@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import commentsService from '../commentsService';
 
 export const getAllComments = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const getAllCommentsResponse: any = await commentsService.getAllRecords(
     params.submission_uuid
@@ -20,6 +21,7 @@ export const getAllComments = async (req: any, rep: FastifyReply) => {
 };
 
 export const createComment = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const createCommentResponse: any = await commentsService.createRecord(
     body.text,
@@ -40,6 +42,7 @@ export const createComment = async (req: any, rep: FastifyReply) => {
 };
 
 export const updateComment = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const updateCommentsResponse: any = await commentsService.updateRecord(
     body.uuid,
@@ -61,6 +64,7 @@ export const updateComment = async (req: any, rep: FastifyReply) => {
 };
 
 export const deleteComment = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const deleteCommentResponse: any = await commentsService.deleteRecord(
     body.uuid

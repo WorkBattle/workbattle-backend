@@ -4,6 +4,7 @@ import { checkIfExists, deleteFile, uploadFile } from '../../aws/fileUtils';
 import userService from '../utils/userService';
 
 export const getUser = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const userUuid = params.uuid;
   const getUserResponse: any = await userService.getRecord(userUuid);
@@ -24,6 +25,7 @@ export const getUser = async (req: any, rep: FastifyReply) => {
 };
 
 export const getInfo = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const userUuid = req.requestContext.get('user').uuid;
   const getUserResponse: any = await userService.getRecord(userUuid);
   if (getUserResponse.error) {
@@ -43,6 +45,7 @@ export const getInfo = async (req: any, rep: FastifyReply) => {
 };
 
 export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
 
   const avatarBase64 = body.avatar64;
@@ -68,6 +71,7 @@ export const createUser = async (req: FastifyRequest, rep: FastifyReply) => {
 };
 
 export const updateUser = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
 
   const avatarBase64 = body.avatar64;
@@ -117,6 +121,7 @@ export const updateUser = async (req: any, rep: FastifyReply) => {
 };
 
 export const deleteUser = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const { deleteUserResponse, avatarUrl }: any = await userService.deleteRecord(
     params.uuid
