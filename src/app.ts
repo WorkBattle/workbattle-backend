@@ -6,7 +6,7 @@ const server: FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse
-> = fastify({ logger: true });
+> = fastify({ logger: true, bodyLimit: 10485760 });
 
 registerApi(server);
 
