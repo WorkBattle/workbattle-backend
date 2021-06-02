@@ -12,6 +12,7 @@
     "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\"",
     "prepare": "husky install",
     "test": "env-cmd -f ./config/prod.env tap --ts ./tests",
+    "test:unit": "env-cmd -f ./config/prod.env tap --ts ./tests/unit",
     "test:scenario": "env-cmd -f ./config/prod.env tap --ts ./tests/scenario/basic.test.ts"
   },
   "author": "",
