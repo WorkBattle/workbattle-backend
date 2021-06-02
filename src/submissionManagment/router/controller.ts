@@ -45,6 +45,7 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   if (isLiked.rows.length != 0) {
     submission.liked = true;
   } else {
+    submission.liked = false;
     const isDiliked: any = await likesService.IsLikeOrDislike(
       getLikesResponse.rows[0].uuid,
       currentUserUuid,
@@ -55,6 +56,8 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
     }
     if (isDiliked.rows.length != 0) {
       submission.disliked = true;
+    } else {
+      submission.disliked = false;
     }
   }
 

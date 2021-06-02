@@ -20,18 +20,6 @@ export const routes: RouteOptions[] = [
     method: 'POST',
     url: '/contest',
     handler: controller.createContest,
-    schema: {
-      body: {
-        title: { type: 'string' },
-        description: { type: 'string' },
-        taskDescription: { type: 'string' },
-        closed: { type: 'boolean' },
-        authorUuid: { type: 'string' },
-        contestStart: { type: 'object' },
-        contestSrop: { type: 'object' },
-        contestType: { type: 'string' },
-      },
-    },
   },
   {
     method: 'PATCH',
