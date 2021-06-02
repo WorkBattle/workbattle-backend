@@ -47,7 +47,7 @@ export const authenticateWithGit = async (requestToken: string) => {
       gitUserData.data.login
     );
     if (checkIfUsernameExists.error) {
-      return { error: { status: 4000, result: checkIfUsernameExists } };
+      return { error: { status: 400, result: checkIfUsernameExists } };
     }
     const { uuid, createRecordResponse }: any = await userService.createRecord(
       checkIfUsernameExists.rows.length == 0
