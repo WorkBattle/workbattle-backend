@@ -28,10 +28,36 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   );
   submission.likes = getLikesResponse.rows[0].likes;
   submission.dislikes = getLikesResponse.rows[0].dislikes;
-  submission.liked = true;
+  // submission.liked = true;
   delete submission.likes_uuid;
 
   const user_uuid = submission.user_uuid;
+  const currentUserUuid = req.requestContext.get('user').uuid;
+
+  const isLiked: any = await likesService.IsLikeOrDislike(
+    getLikesResponse.rows[0].uuid,
+    currentUserUuid,
+    true
+  );
+  if (isLiked.error) {
+    return rep.status(400).send(isLiked);
+  }
+  if (isLiked.rows.length != 0) {
+    submission.liked = true;
+  } else {
+    const isDiliked: any = await likesService.IsLikeOrDislike(
+      getLikesResponse.rows[0].uuid,
+      currentUserUuid,
+      false
+    );
+    if (isDiliked.error) {
+      return rep.status(400).send(isLiked);
+    }
+    if (isDiliked.rows.length != 0) {
+      submission.disliked = true;
+    }
+  }
+
   const getUserResponse: any = await userService.getRecord(user_uuid);
   if (getUserResponse.error) {
     return rep.status(400).send(getUserResponse);
