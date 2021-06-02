@@ -13,12 +13,12 @@ class commentsService implements IService {
     submission_uuid: string,
     user_uuid: string
   ) {
-    const uuid = uuid4();
+    const commentUuid = uuid4();
     const {
       queryString,
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('comments', {
-      uuid: uuid,
+      uuid: commentUuid,
       text: text,
       submission_uuid: submission_uuid,
       user_uuid: user_uuid,
@@ -27,7 +27,7 @@ class commentsService implements IService {
       queryString,
       valuesArray
     );
-    return { uuid, createRecordResponse };
+    return { commentUuid, createRecordResponse };
   }
   public async updateRecord(
     uuid: string,

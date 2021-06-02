@@ -28,14 +28,14 @@ export const createComment = async (req: any, rep: FastifyReply) => {
   const attachmentList64 = body.attachmentList;
   const {
     commentUuid,
-    createCommentResponse,
+    createRecordResponse,
   }: any = await commentsService.createRecord(
     body.text,
     body.submissionUuid,
     body.userUuid
   );
-  if (createCommentResponse.error) {
-    return rep.status(400).send(createCommentResponse);
+  if (createRecordResponse.error) {
+    return rep.status(400).send(createRecordResponse);
   }
   if (attachmentList64 != undefined) {
     for (let attachment64 of attachmentList64) {
@@ -43,16 +43,14 @@ export const createComment = async (req: any, rep: FastifyReply) => {
       let base64 = splitted[1];
       let extenstion = splitted[0].split(';')[0].split('/')[1];
       let {
-        createAttachmentResponse,
-        attachmentUuid,
+        createRecordResponse,
+        uuid,
       }: any = await attachmentService.createRecord(extenstion, commentUuid);
-      if (createAttachmentResponse.error) {
-        return rep.status(400).send(createAttachmentResponse);
+      if (createRecordResponse.error) {
+        return rep.status(400).send(createRecordResponse);
       }
-      uploadFile(
-        Buffer.from(base64, 'base64'),
-        `${attachmentUuid}/${body.url}`
-      );
+      console.log(uuid);
+      uploadFile(Buffer.from(base64, 'base64'), `${uuid}.${extenstion}`);
     }
   }
 

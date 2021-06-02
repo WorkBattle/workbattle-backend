@@ -22,7 +22,7 @@ class attachmentService implements IService {
       queryString,
       valuesArray
     );
-    return { createAttachmentResponse: createRecordResponse, uuid: uuid };
+    return { createRecordResponse, uuid };
   }
   public async updateRecord(uuid: string, url?: string, comment_uuid?: string) {
     const {
