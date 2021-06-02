@@ -16,25 +16,30 @@ class SubmissionService implements IService {
     content_url?: string,
     file_url?: string,
     repo_url?: string
-  ): Promise<QueryResult<any> | { error: any }> {
+  ) {
+    const submissionUuid = uuid4();
+    let fileUrl = file_url;
+    if (file_url != undefined) {
+      fileUrl = `${submissionUuid}.${file_url}`;
+    }
     const {
       queryString,
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('submission', {
-      uuid: uuid4(),
+      uuid: submissionUuid,
       content_type: content_type,
       user_uuid: user_uuid,
       contest_uuid,
       likes_uuid: likes_uuid,
       content_url: content_url,
-      file_url: file_url,
+      file_url: fileUrl,
       repo_url: repo_url,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return createRecordResponse;
+    return { submissionUuid, createRecordResponse };
   }
   public async updateRecord(
     uuid: string,

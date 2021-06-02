@@ -6,6 +6,7 @@ import submissionService from '../utils/submissionService';
 import { toCamel } from 'snake-camel';
 import userService from '../../userManagment/utils/userService';
 import contestService from '../../contestManagment/utils/contestService';
+import { uploadFile } from '../../aws/fileUtils';
 
 export const getSubmission = async (req: any, rep: FastifyReply) => {
   rep.header('Access-Control-Allow-Credentials', 'true');
@@ -140,17 +141,35 @@ export const createSubmission = async (req: any, rep: FastifyReply) => {
   if (createLikesResponse.error) {
     return rep.status(400).send(createLikesResponse);
   }
-  const createSubmissionResponse: any = await submissionService.createRecord(
+  let fileUrl = body.fileUrl;
+  let base64;
+  let extenstion;
+  if (body.contentType == 'file') {
+    let splitted = body.file.split(',');
+    base64 = splitted[1];
+    extenstion = splitted[0].split(';')[0].split('/')[1];
+    fileUrl = extenstion;
+  }
+  const {
+    submissionUuid,
+    createRecordResponse,
+  }: any = await submissionService.createRecord(
     body.contentType,
     userUuid,
     contestUuid,
     uuid,
     body.contentUrl,
-    body.fileUrl,
+    fileUrl,
     body.repoUrl
   );
-  if (createSubmissionResponse.error) {
-    return rep.status(400).send(createSubmissionResponse);
+  if (createRecordResponse.error) {
+    return rep.status(400).send(createRecordResponse);
+  }
+  if (body.contentType == 'file') {
+    uploadFile(
+      Buffer.from(base64, 'base64'),
+      `${submissionUuid}.${extenstion}`
+    );
   }
   let submissionResponse: { [key: string]: any } = {
     result: 'Submission has been created.',
