@@ -15,7 +15,7 @@ class attachmentService implements IService {
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('attachment', {
       uuid: uuid,
-      url: url != '' ? `${uuid}/${url}` : url,
+      url: `${uuid}.${url}`, // url here is png
       comment_uuid: comment_uuid,
     });
     const createRecordResponse = await postgresQueryExecutor(

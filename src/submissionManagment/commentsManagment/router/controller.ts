@@ -1,4 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { uploadFile } from '../../../aws/fileUtils';
+import attachmentService from '../../attachmentManagment/attachmentService';
 import commentsService from '../commentsService';
 
 export const getAllComments = async (req: any, rep: FastifyReply) => {
@@ -23,7 +25,11 @@ export const getAllComments = async (req: any, rep: FastifyReply) => {
 export const createComment = async (req: any, rep: FastifyReply) => {
   rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
-  const createCommentResponse: any = await commentsService.createRecord(
+  const attachmentList64 = body.attachmentList;
+  const {
+    commentUuid,
+    createCommentResponse,
+  }: any = await commentsService.createRecord(
     body.text,
     body.submissionUuid,
     body.userUuid
@@ -31,9 +37,44 @@ export const createComment = async (req: any, rep: FastifyReply) => {
   if (createCommentResponse.error) {
     return rep.status(400).send(createCommentResponse);
   }
-  let commentResponse: { [key: string]: any } = {
-    result: 'Comment has been created.',
-  };
+  if (attachmentList64 != undefined) {
+    for (let attachment64 of attachmentList64) {
+      let splitted = attachment64.split(',');
+      let base64 = splitted[1];
+      let extenstion = splitted[0].split(';')[0].split('/')[1];
+      let {
+        createAttachmentResponse,
+        attachmentUuid,
+      }: any = await attachmentService.createRecord(extenstion, commentUuid);
+      if (createAttachmentResponse.error) {
+        return rep.status(400).send(createAttachmentResponse);
+      }
+      uploadFile(
+        Buffer.from(base64, 'base64'),
+        `${attachmentUuid}/${body.url}`
+      );
+    }
+  }
+
+  const getComment: any = await commentsService.getRecord(commentUuid);
+
+  let commentResponse: { [key: string]: any } = getComment.rows[0];
+
+  const getAttachmentResponse: any = await attachmentService.getRecord(
+    commentUuid
+  );
+
+  let attachments = getAttachmentResponse.rows;
+
+  if (attachments != []) {
+    attachments = attachments.map((attachment: any) => {
+      if (attachment.url != '') {
+        attachment.url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${attachment.url}`;
+      }
+      return attachment;
+    });
+  }
+  commentResponse.attachments = attachments;
   const accessToken = req.requestContext.get('token');
   if (accessToken != undefined) {
     commentResponse['token'] = accessToken.access;
