@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { uploadFile } from '../../../aws/fileUtils';
+import userService from '../../../userManagment/utils/userService';
 import attachmentService from '../../attachmentManagment/attachmentService';
 import commentsService from '../commentsService';
 
@@ -73,6 +74,19 @@ export const createComment = async (req: any, rep: FastifyReply) => {
     });
   }
   commentResponse.attachments = attachments;
+
+  const getUserResponse: any = await userService.getRecord(body.userUuid);
+  if (getUserResponse.error) {
+    return rep.status(400).send(getUserResponse);
+  }
+  let userData = getUserResponse.rows[0];
+  delete userData.password;
+  if (userData.avatar != '') {
+    userData.avatar = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${userData.avatar}`;
+  }
+  commentResponse.user = userData;
+  delete commentResponse.user_uuid;
+
   const accessToken = req.requestContext.get('token');
   if (accessToken != undefined) {
     commentResponse['token'] = accessToken.access;
