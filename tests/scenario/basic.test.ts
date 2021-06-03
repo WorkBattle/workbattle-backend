@@ -121,7 +121,7 @@ test("Running scenario test with phases: register -> getUserInfo -> create conte
         method: "POST",
         url: "/api/v1/submission",
         payload: {
-          contentType: "file",
+          contentType: "url",
           userUuid: "8591f2c7-b423-4535-9fe1-fe50dfcaf47a",
           contestUuid: contestUuid,
         },
