@@ -11,7 +11,7 @@
     "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
     "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\"",
     "prepare": "husky install",
-    "test": "echo helloWorld",
+    "test": "echo Test",
     "test:unit": "env-cmd -f ./config/prod.env tap --ts ./tests/unit",
     "test:scenario": "env-cmd -f ./config/prod.env tap --ts ./tests/scenario/basic.test.ts"
   },

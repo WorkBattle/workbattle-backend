@@ -25,19 +25,6 @@ export const routes: RouteOptions[] = [
     method: 'PATCH',
     url: '/contest',
     handler: controller.updateContest,
-    schema: {
-      body: {
-        uuid: { type: 'string' },
-        title: { type: 'string' },
-        description: { type: 'string' },
-        taskDescription: { type: 'string' },
-        closed: { type: 'boolean' },
-        authorUuid: { type: 'string' },
-        contestStart: { type: 'object' },
-        contestSrop: { type: 'object' },
-        contestType: { type: 'string' },
-      },
-    },
   },
   {
     method: 'DELETE',
