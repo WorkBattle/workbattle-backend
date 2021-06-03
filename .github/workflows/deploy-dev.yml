@@ -26,6 +26,25 @@ jobs:
       - name: Install NPM packages
         run: npm install
       
+      - name: Setup .env
+        run: echo Setting up env variables
+        env:
+          psqlUser=${{secrets.psqlUser}}
+          psqlHost=${{secrets.psqlHost}}
+          psqlName=${{secrets.psqlName}}
+          psqlPass=${{secrets.psqlPass}}
+          psqlPort=5432
+          AWSS3ID=${{secrets.AWSS3ID}}
+          AWSS3SECRET=${{secrets.AWSS3SECRET}}
+          PORT=3000
+          HOST=0.0.0.0
+          COOKIE_SECRET=${{secrets.AWSS3SECRET}}
+          REFRESH_TOKEN_SECRET=${{secrets.REFRESH_TOKEN_SECRET}}
+          ACCESS_TOKEN_SECRET=${{secrets.ACCESS_TOKEN_SECRET}}
+          GIT_SECRET=${{secrets.GIT_SECRET}}
+          GIT_CLIENT=${{secrets.GIT_CLIENT}}
+
+        
       - name: Run prettier check
         run: npm run prettier:check
 
@@ -33,7 +52,7 @@ jobs:
         run: npm run tslint
 
       - name: Run Unit testing
-        run: npm run test
+        run: npm run test:actionEnv
 
       - name: Run production build
         run: npm run build
