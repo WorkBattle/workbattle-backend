@@ -43,6 +43,9 @@ export const getContest = async (req: any, rep: FastifyReply) => {
     );
     tempSub.likes = getLikesResponse.rows[0].likes;
     delete tempSub.likes_uuid;
+    if (tempSub.file_url != undefined) {
+      tempSub.file_url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${tempSub.file_url}`;
+    }
     awaitedSubmissions.push(toCamel(tempSub));
   }
   let contestResponse: { [key: string]: any } = {

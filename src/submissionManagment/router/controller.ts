@@ -120,6 +120,9 @@ export const getSubmission = async (req: any, rep: FastifyReply) => {
   if (accessToken != undefined) {
     submissionResponse['token'] = accessToken.access;
   }
+  if (submissionResponse.file_url != undefined) {
+    submissionResponse.file_url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${submissionResponse.file_url}`;
+  }
   return rep.status(200).send(toCamel(submissionResponse));
 };
 
