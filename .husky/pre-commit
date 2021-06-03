@@ -2,5 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 npm run tslint
 npm run prettier:write
-npm run test
+npm run test:env
 git add -A .
