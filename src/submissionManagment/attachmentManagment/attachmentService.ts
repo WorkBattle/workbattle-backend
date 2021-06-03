@@ -15,14 +15,14 @@ class attachmentService implements IService {
       valuesArray,
     } = constructCreateQueryStringBasedOnParams('attachment', {
       uuid: uuid,
-      url: url != '' ? `${uuid}/${url}` : url,
+      url: `${uuid}.${url}`, // url here is png
       comment_uuid: comment_uuid,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
       valuesArray
     );
-    return { createAttachmentResponse: createRecordResponse, uuid: uuid };
+    return { createRecordResponse, uuid };
   }
   public async updateRecord(uuid: string, url?: string, comment_uuid?: string) {
     const {

@@ -34,6 +34,6 @@ export const routes: RouteOptions[] = [
   {
     method: 'POST',
     url: '/submission/:uuid/dislikes',
-    handler: controller.updateLikes,
+    handler: controller.updateDislikes,
   },
 ];

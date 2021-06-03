@@ -6,6 +6,7 @@ import { toCamel } from 'snake-camel';
 import likesService from '../../submissionManagment/likesManagment/likesService';
 
 export const getContest = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const getContestResponse: any = await contestService.getRecord(params.uuid);
 
@@ -42,6 +43,9 @@ export const getContest = async (req: any, rep: FastifyReply) => {
     );
     tempSub.likes = getLikesResponse.rows[0].likes;
     delete tempSub.likes_uuid;
+    if (tempSub.file_url != undefined) {
+      tempSub.file_url = `http://file-storage-workbattle.s3-website.eu-west-1.amazonaws.com/${tempSub.file_url}`;
+    }
     awaitedSubmissions.push(toCamel(tempSub));
   }
   let contestResponse: { [key: string]: any } = {
@@ -56,6 +60,7 @@ export const getContest = async (req: any, rep: FastifyReply) => {
 };
 
 export const getAllContests = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const getAllContestsResponse: any = await contestService.getAllRecords();
   if (getAllContestsResponse.error) {
     return rep.status(400).send(getAllContestsResponse);
@@ -73,6 +78,7 @@ export const getAllContests = async (req: any, rep: FastifyReply) => {
 };
 
 export const createContest = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const createContestReponse: any = await contestService.createRecord(
     body.title,
@@ -99,6 +105,7 @@ export const createContest = async (req: any, rep: FastifyReply) => {
 };
 
 export const updateContest = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const body: any = req.body;
   const updateContestResponse: any = await contestService.updateRecord(
     body.uuid,
@@ -123,6 +130,7 @@ export const updateContest = async (req: any, rep: FastifyReply) => {
 };
 
 export const deleteContest = async (req: any, rep: FastifyReply) => {
+  rep.header('Access-Control-Allow-Credentials', 'true');
   const params: any = req.params;
   const deleteContestResponse: any = await contestService.deleteRecord(
     params.uuid

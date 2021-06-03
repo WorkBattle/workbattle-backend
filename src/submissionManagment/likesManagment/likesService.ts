@@ -24,6 +24,58 @@ class likesService implements IService {
     );
     return { createLikesResponse: createRecordResponse, uuid: uuid };
   }
+
+  public async IsLikeOrDislike(
+    likesDislikesUuid: string,
+    userUuid: string,
+    likes: boolean
+  ) {
+    const checkQuery = `SELECT * FROM ${
+      likes ? 'likes' : 'dislikes'
+    } WHERE likes_dislikes_uuid = $1 and user_uuid = $2;`;
+    const checkResponse = await postgresQueryExecutor(checkQuery, [
+      likesDislikesUuid,
+      userUuid,
+    ]);
+    return checkResponse;
+  }
+
+  public async createLikesOrDislikesRecord(
+    likesDislikesUuid: string,
+    userUuid: string,
+    likes: boolean
+  ) {
+    const uuid = uuid4();
+    const {
+      queryString,
+      valuesArray,
+    } = constructCreateQueryStringBasedOnParams(likes ? 'likes' : 'dislikes', {
+      uuid: uuid,
+      likes_dislikes_uuid: likesDislikesUuid,
+      user_uuid: userUuid,
+    });
+    const createRecordResponse: any = await postgresQueryExecutor(
+      queryString,
+      valuesArray
+    );
+    return createRecordResponse;
+  }
+
+  public async deleteLikesOrDislikeRecord(
+    likesDislikesUuid: string,
+    userUuid: string,
+    likes: boolean
+  ) {
+    const deleteRecordQuery = `DELETE FROM ${
+      likes ? 'likes' : 'dislikes'
+    } WHERE likes_dislikes_uuid = $1 and user_uuid = $2;`;
+    const deleteRecordResponse = await postgresQueryExecutor(
+      deleteRecordQuery,
+      [likesDislikesUuid, userUuid]
+    );
+    return deleteRecordResponse;
+  }
+
   public async updateRecord(
     uuid: string,
     likes?: number,

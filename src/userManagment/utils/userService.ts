@@ -10,13 +10,14 @@ import { QueryResult } from 'pg';
 class UserService implements IService {
   public async createRecord(
     username: string,
-    email: string,
+    email?: string,
     password?: string,
     firstname?: string,
     lastname?: string,
     role: string = 'user',
     balance: number = 0,
-    avatar = ''
+    avatar = '',
+    gitLogin?: string
   ) {
     const uuid = uuid4();
     const {
@@ -32,6 +33,7 @@ class UserService implements IService {
       role: role,
       balance: balance,
       avatar: avatar != '' ? `${uuid}/${avatar}` : avatar,
+      git_login: gitLogin,
     });
     const createRecordResponse = await postgresQueryExecutor(
       queryString,
@@ -77,7 +79,13 @@ class UserService implements IService {
       avatarUrlResponse: getAvatarUrlResponse,
     };
   }
-  public async deleteRecord(uuid: string) {
+  public async deleteRecord(uuid: string, username?: string) {
+    if (username && uuid == '') {
+      return await postgresQueryExecutor(
+        `DELETE FROM "user" WHERE username = $1;`,
+        [username]
+      );
+    }
     const getAvatarUrl: string = 'SELECT avatar from "user" WHERE uuid = $1;';
     const getAvatarUrlResponse: any = await postgresQueryExecutor(
       getAvatarUrl,
@@ -96,7 +104,8 @@ class UserService implements IService {
   public async getRecord(
     uuid: string,
     username?: string,
-    email?: string
+    email?: string,
+    gitLogin?: string
   ): Promise<any> {
     let getRecordResponse;
     if (uuid != '' && username == undefined) {
@@ -110,6 +119,12 @@ class UserService implements IService {
     } else if (email != undefined) {
       const getRecordQuery: string = `SELECT * FROM "user" WHERE email = $1`;
       getRecordResponse = await postgresQueryExecutor(getRecordQuery, [email]);
+    } else if (gitLogin != undefined) {
+      const getRecordQuery: string =
+        'SELECT * FROM "user" WHERE git_login = $1';
+      getRecordResponse = await postgresQueryExecutor(getRecordQuery, [
+        gitLogin,
+      ]);
     }
     return getRecordResponse;
   }

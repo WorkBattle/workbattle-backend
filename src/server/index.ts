@@ -7,22 +7,44 @@ import * as submission from '../submissionManagment/router';
 import * as comment from '../submissionManagment/commentsManagment/router';
 import * as attachment from '../submissionManagment/attachmentManagment/router';
 import * as auth from '../auth/router';
-import { aplyIsAuthOnRequestHook } from './utils/aplyHooks';
+import { aplyIsAuthPreValidationHook } from './utils/aplyHooks';
 
 const routers: any[] = [contest, user, submission, comment, attachment, auth];
 
 export default (server: FastifyInstance<Server>) => {
   server.register(require('fastify-cors'), {
-    origin: true,
+    origin: ['http://localhost:4200', 'https://workbattle.me'],
+    credentials: true,
   });
   server.register(require('fastify-cookie'), {
     secret: process.env.COOKIE_SECRET,
   });
   server.register(fastifyRequestContextPlugin);
+  server.register(require('fastify-swagger'), {
+    swagger: {
+      info: {
+        title: 'Swagger for API integratoin',
+        description: 'testing the fastify swagger api',
+        version: '0.1.0',
+      },
+      host: 'localhost',
+      schemes: ['https'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      securityDefinitions: {
+        apiKey: {
+          type: 'apiKey',
+          name: 'apiKey',
+          in: 'header',
+        },
+      },
+    },
+    exposeRoute: true,
+  });
   routers.forEach((router) => {
     let { routes, opts } = router;
 
-    if (router != auth) routes = aplyIsAuthOnRequestHook(routes);
+    if (router != auth) routes = aplyIsAuthPreValidationHook(routes);
 
     const plugin = (
       server: FastifyInstance,
