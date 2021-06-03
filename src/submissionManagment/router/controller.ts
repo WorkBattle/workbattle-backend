@@ -257,7 +257,7 @@ export const updateLikes = async (req: any, rep: FastifyReply) => {
     true
   );
   if (checkIfLiked.rows.length != 0 && !req.body?.delete) {
-    return rep.status(400).send('Like has already been set.');
+    return rep.status(400).send({});
   }
   if (req.body.delete == true) {
     const deleteLikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
@@ -268,7 +268,7 @@ export const updateLikes = async (req: any, rep: FastifyReply) => {
     if (deleteLikeResponse.error) {
       return rep.status(400).send(deleteLikeResponse);
     }
-    return rep.status(200).send('Like has been unset.');
+    return rep.status(200).send({});
   }
   const checkIfDisliked: any = await likesService.IsLikeOrDislike(
     likesDislikesUuid,
@@ -293,7 +293,7 @@ export const updateLikes = async (req: any, rep: FastifyReply) => {
   if (createLikeResponse.error) {
     return rep.status(400).send(createLikeResponse);
   }
-  return rep.status(200).send('Like has been created.');
+  return rep.status(200).send({});
 };
 export const updateDislikes = async (req: any, rep: FastifyReply) => {
   rep.header('Access-Control-Allow-Credentials', 'true');
@@ -312,7 +312,7 @@ export const updateDislikes = async (req: any, rep: FastifyReply) => {
     false
   );
   if (checkIfDisliked.rows.length != 0 && !req.body?.delete) {
-    return rep.status(400).send('Dislike has already been set.');
+    return rep.status(400).send({});
   }
   if (req.body.delete == true) {
     const deleteDislikeResponse: any = await likesService.deleteLikesOrDislikeRecord(
@@ -323,7 +323,7 @@ export const updateDislikes = async (req: any, rep: FastifyReply) => {
     if (deleteDislikeResponse.error) {
       return rep.status(400).send(deleteDislikeResponse);
     }
-    return rep.status(200).send('Dislike has been unset.');
+    return rep.status(200).send({});
   }
 
   const checkIfLiked: any = await likesService.IsLikeOrDislike(
@@ -349,5 +349,5 @@ export const updateDislikes = async (req: any, rep: FastifyReply) => {
   if (createDislikeResponse.error) {
     return rep.status(400).send(createDislikeResponse);
   }
-  return rep.status(200).send('Dislike has been created.');
+  return rep.status(200).send({});
 };
